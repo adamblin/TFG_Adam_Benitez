@@ -15,61 +15,71 @@ Frontend (React Native) --> API REST (NestJS) --> Application Layer (Use Cases) 
 ## Stack tecnològic
 
 ### Frontend
-- React Native (Expo)
+- React Native (Expo 54)
 - TypeScript
 - Expo Router
-- TanStack Query (server state)
-- Zustand (UI state)
 
 ### Backend
-- NestJS
+- NestJS 11
 - TypeScript
-- Prisma ORM
+- Prisma ORM 6
 - PostgreSQL
-- JWT + Passport (Auth)
 
 ### Infraestructura
 - Docker Compose
-- GitHub Actions (CI/CD)
-- Sentry (monitorització)
+- Node.js
 
 
 ## Estructura del projecte
 
 ### Backend (`/backend/src`)
 
+```
 src/
-├── modules/
-│ ├── auth/
-│ │ ├── api/
-│ │ ├── application/
-│ │ ├── domain/
-│ │ ├── persistence/
-│ │ └── dto/
-│ │
-│ ├── users/
-│ ├── tasks/
-│ └── focus/
-│
-├── common/
-├── config/
+├── infrastructure/
+│   └── prisma/
+│       ├── prisma.module.ts
+│       └── prisma.service.ts
+├── app.module.ts
+├── app.controller.ts
+├── app.service.ts
 └── main.ts
+```
 
 ### Frontend (`/frontend`)
 
+```
 app/
-├── (auth)/
-├── (tabs)/
-├── tasks/
-├── focus/
-└── profile/
+├── _layout.tsx
+└── index.tsx
 
 src/
 ├── services/
-├── store/
-├── hooks/
-├── components/
-└── utils/
+├── shared/
+└── store/
+```
+
+### Estructura General
+
+```
+.
+├── backend/
+│   ├── src/
+│   ├── prisma/
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── app/
+│   ├── src/
+│   ├── package.json
+│   └── tsconfig.json
+├── scripts/
+│   ├── start-all.js
+│   ├── stop-all.js
+│   └── smoke-test.js
+├── docker-compose.yml
+└── package.json
+```
 
 
 ## Autenticació
