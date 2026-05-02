@@ -26,18 +26,30 @@ function runSync(command, args, workingDirectory, ignoreErrors = false) {
   const result = spawnSync(command, args, {
     cwd: workingDirectory,
     encoding: 'utf8',
-    stdio: 'inherit',
+    stdio: ['ignore', 'pipe', 'pipe'],
     shell: process.platform === 'win32',
   });
+
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
 
   if (result.status !== 0 && !ignoreErrors) {
     const exitCode = typeof result.status === 'number' ? result.status : 1;
     writeLine(`ERROR: Command failed with exit code ${exitCode}`);
     writeLine(`Command: ${command} ${args.join(' ')}`);
-    if (result.stderr) writeLine(`stderr: ${result.stderr}`);
-    if (result.stdout) writeLine(`stdout: ${result.stdout}`);
     process.exit(exitCode);
   }
+
+  return result;
+}
+
+function getCommandOutput(result) {
+  return `${result.stdout ?? ''}\n${result.stderr ?? ''}`;
+}
+
+function hasFailedMigration(result) {
+  const output = getCommandOutput(result);
+  return /P3009|P3018|failed migrations|migration .* failed/i.test(output);
 }
 
 function runDetached(command, args, workingDirectory, outLogPath, errLogPath) {
@@ -101,7 +113,13 @@ async function main() {
 
   if (hasBackendMigrations) {
     writeLine('Applying Prisma migrations...');
-    runSync(npxCommand, ['prisma', 'migrate', 'deploy'], backendPath, true);
+    const migrateDeployResult = runSync(npxCommand, ['prisma', 'migrate', 'deploy'], backendPath, true);
+
+    if (migrateDeployResult.status !== 0 && hasFailedMigration(migrateDeployResult)) {
+      writeLine('Detected failed Prisma migrations. Resetting the local database and retrying...');
+      runSync(npxCommand, ['prisma', 'migrate', 'reset', '--force', '--skip-generate', '--skip-seed'], backendPath);
+      runSync(npxCommand, ['prisma', 'migrate', 'deploy'], backendPath);
+    }
   }
   else {
     writeLine('Skipping Prisma migrations: no migration.sql files exist yet.');
