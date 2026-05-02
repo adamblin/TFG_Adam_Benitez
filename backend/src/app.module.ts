@@ -5,7 +5,10 @@ import { AppService } from './app.service';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }), PrismaModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    PrismaModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
