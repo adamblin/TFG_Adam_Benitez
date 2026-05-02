@@ -1,0 +1,13 @@
+{
+  "name": "tfg-adam-benitez",
+  "private": true,
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "start:all": "node scripts/start-all.js",
+    "stop:all": "node scripts/stop-all.js",
+    "smoke:test": "node scripts/smoke-test.js"
+  }
+}
