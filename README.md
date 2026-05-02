@@ -72,7 +72,7 @@ src/
 └── utils/
 
 
-## 🔐 Autenticació
+## Autenticació
 
 Sistema basat en:
 - JWT (access token)
