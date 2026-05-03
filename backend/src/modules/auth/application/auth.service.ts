@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { RegisterUserUseCase } from '../../users/application/use-cases/register-user.use-case';
-import { RegisterUserResponse } from '../../users/application/types/register-user-response.type';
 import { LoginUserDto } from '../api/dto/login-user.dto';
 import { RegisterUserDto } from '../api/dto/register-user.dto';
+import { RegisterUserUseCase } from '../../users/application/use-cases/register-user.use-case';
+import { RegisterUserResponse } from '../../users/application/types/register-user-response.type';
 import { RefreshTokenDto } from '../api/dto/refresh-token.dto';
 import { LoginUserUseCase } from './use-cases/login-user.use-case';
 import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
