@@ -3,6 +3,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
 
+type RegisterResponse = {
+  id: string;
+  email: string;
+  username: string;
+};
+
+type LoginResponse = {
+  token: string;
+  refreshToken: string;
+};
+
 describe('UsersController (e2e)', () => {
   let app: INestApplication;
   const uniqueSuffix = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
@@ -25,15 +36,15 @@ describe('UsersController (e2e)', () => {
 
   it('registers a new user and rejects duplicates', async () => {
     // Register via auth to create a user, then fetch profile via /users/me
-    const registerResponse = await request(app.getHttpServer())
+    const registerResponse = (await request(app.getHttpServer())
       .post('/auth/register')
       .send({ email, username, password })
-      .expect(201);
+      .expect(201)) as unknown as { body: RegisterResponse };
 
-    const loginResponse = await request(app.getHttpServer())
+    const loginResponse = (await request(app.getHttpServer())
       .post('/auth/login')
       .send({ username, password })
-      .expect(201);
+      .expect(201)) as unknown as { body: LoginResponse };
 
     const meResponse = await request(app.getHttpServer())
       .get('/users/me')

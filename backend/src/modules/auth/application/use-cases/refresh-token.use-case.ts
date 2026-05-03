@@ -21,9 +21,14 @@ export class RefreshTokenUseCase {
 
   async execute(input: RefreshTokenInput): Promise<LoginResponse> {
     try {
-      const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(input.refreshToken, {
-        secret: this.configService.get('JWT_REFRESH_SECRET') ?? 'dev-refresh-secret',
-      });
+      const payload = await this.jwtService.verifyAsync<RefreshTokenPayload>(
+        input.refreshToken,
+        {
+          secret:
+            this.configService.get('JWT_REFRESH_SECRET') ??
+            'dev-refresh-secret',
+        },
+      );
 
       if (payload.type !== 'refresh') {
         throw new UnauthorizedException('Invalid refresh token');
@@ -46,7 +51,9 @@ export class RefreshTokenUseCase {
           type: 'refresh',
         },
         {
-          secret: this.configService.get('JWT_REFRESH_SECRET') ?? 'dev-refresh-secret',
+          secret:
+            this.configService.get('JWT_REFRESH_SECRET') ??
+            'dev-refresh-secret',
           expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION') ?? '7d',
         },
       );

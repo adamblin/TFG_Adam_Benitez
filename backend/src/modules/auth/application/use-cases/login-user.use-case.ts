@@ -22,7 +22,10 @@ export class LoginUserUseCase {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(input.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      input.password,
+      user.passwordHash,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -40,7 +43,8 @@ export class LoginUserUseCase {
         type: 'refresh',
       },
       {
-        secret: this.configService.get('JWT_REFRESH_SECRET') ?? 'dev-refresh-secret',
+        secret:
+          this.configService.get('JWT_REFRESH_SECRET') ?? 'dev-refresh-secret',
         expiresIn: this.configService.get('JWT_REFRESH_EXPIRATION') ?? '7d',
       },
     );

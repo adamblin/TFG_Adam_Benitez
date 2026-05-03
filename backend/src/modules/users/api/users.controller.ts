@@ -11,6 +11,11 @@ type AuthenticatedRequest = Request & {
   user: AuthenticatedRequestUser;
 };
 
+type UpdateMeBody = {
+  username?: string;
+  email?: string;
+};
+
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
@@ -26,9 +31,9 @@ export class UsersController {
   @Patch('me')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update current authenticated user (partial)' })
-  updateMe(@Req() req: AuthenticatedRequest, @Body() body: any) {
+  updateMe(@Req() req: AuthenticatedRequest, @Body() body: UpdateMeBody) {
     // For now, keep this as a stub that echoes allowed fields.
-    const allowed: any = {};
+    const allowed: UpdateMeBody = {};
     if (body.username) allowed.username = String(body.username).trim();
     if (body.email) allowed.email = String(body.email).trim().toLowerCase();
     return { id: req.user.sub, ...allowed };

@@ -17,13 +17,18 @@ export class RegisterUserUseCase {
       throw new ConflictException('Email already in use');
     }
 
-    const existingUserByUsername = await this.usersRepository.findByUsername(username);
+    const existingUserByUsername =
+      await this.usersRepository.findByUsername(username);
     if (existingUserByUsername) {
       throw new ConflictException('Username already in use');
     }
 
     const passwordHash = await bcrypt.hash(input.password, 10);
-    const user = await this.usersRepository.create({ email, username, passwordHash });
+    const user = await this.usersRepository.create({
+      email,
+      username,
+      passwordHash,
+    });
 
     return {
       id: user.id,

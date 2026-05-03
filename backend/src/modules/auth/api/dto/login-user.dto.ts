@@ -4,7 +4,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class LoginUserDto {
   @ApiProperty({ example: 'test_user', minLength: 3, maxLength: 20 })
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @IsString()
   @Matches(/^[a-zA-Z0-9._-]+$/)
   @MinLength(3)
