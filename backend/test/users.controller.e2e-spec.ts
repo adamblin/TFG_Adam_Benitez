@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
+import { App } from 'supertest/types';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
 import { createPrismaServiceMock } from './e2e-prisma.mock';
@@ -17,7 +18,7 @@ type LoginResponse = {
 };
 
 describe('UsersController (e2e)', () => {
-  let app: INestApplication;
+  let app: INestApplication<App>;
   const uniqueSuffix = `${Date.now()}${Math.floor(Math.random() * 1000)}`;
   const email = `user_${uniqueSuffix}@example.com`;
   const username = `user_${uniqueSuffix}`.slice(0, 20);

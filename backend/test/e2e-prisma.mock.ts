@@ -27,7 +27,7 @@ export function createPrismaServiceMock(): {
 
   return {
     user: {
-      async create({ data }) {
+      create({ data }) {
         const user: UserRecord = {
           id: `user_${users.size + 1}`,
           email: data.email,
@@ -36,17 +36,17 @@ export function createPrismaServiceMock(): {
         };
 
         users.set(user.id, user);
-        return user;
+        return Promise.resolve(user);
       },
-      async findUnique({ where }) {
+      findUnique({ where }) {
         if (where.id) {
-          return users.get(where.id) ?? null;
+          return Promise.resolve(users.get(where.id) ?? null);
         }
 
         if (where.email) {
           for (const user of users.values()) {
             if (user.email === where.email) {
-              return user;
+              return Promise.resolve(user);
             }
           }
         }
@@ -54,12 +54,12 @@ export function createPrismaServiceMock(): {
         if (where.username) {
           for (const user of users.values()) {
             if (user.username === where.username) {
-              return user;
+              return Promise.resolve(user);
             }
           }
         }
 
-        return null;
+        return Promise.resolve(null);
       },
     },
     async $connect() {},
