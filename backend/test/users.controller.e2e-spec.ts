@@ -2,6 +2,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
+import { createPrismaServiceMock } from './e2e-prisma.mock';
 
 type RegisterResponse = {
   id: string;
@@ -24,7 +26,10 @@ describe('UsersController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(PrismaService)
+      .useValue(createPrismaServiceMock())
+      .compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
