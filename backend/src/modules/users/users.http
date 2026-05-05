@@ -1,0 +1,24 @@
+@baseUrl = http://localhost:3000
+@username = test_user
+@email = test_user@example.com
+@password = password123
+
+### Register user
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### Register user with another payload
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "new_user@example.com",
+  "username": "new_user",
+  "password": "password123"
+}

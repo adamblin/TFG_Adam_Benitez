@@ -1,0 +1,26 @@
+@baseUrl = http://localhost:3000
+@username = test_user
+@password = password123
+@accessToken = REPLACE_WITH_ACCESS_TOKEN
+@refreshToken = REPLACE_WITH_REFRESH_TOKEN
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "{{username}}",
+  "password": "{{password}}"
+}
+
+### Refresh access token
+POST {{baseUrl}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### Get current authenticated user
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{accessToken}}

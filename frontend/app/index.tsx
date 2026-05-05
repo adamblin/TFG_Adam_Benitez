@@ -1,27 +1,15 @@
+import { SafeAreaView, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { LoginForm } from '../src/features/auth/components/LoginForm';
+import { colors } from '../src/shared/theme';
 
-export default function Index() {
+export default function LoginScreen() {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <Text style={styles.title}>Open app/index.tsx to start building your app.</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <StatusBar style="light" />
+      <View style={{ flex: 1, justifyContent: 'center', padding: 16 }}>
+        <LoginForm />
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ffffff',
-    padding: 24,
-  },
-  title: {
-    fontSize: 18,
-    lineHeight: 24,
-    textAlign: 'center',
-    color: '#111827',
-  },
-});
