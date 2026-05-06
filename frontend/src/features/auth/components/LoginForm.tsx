@@ -76,7 +76,7 @@ export function LoginForm() {
         onPress={handleSubmit}
         disabled={loading}
         loading={loading}
-        label={mode === 'login' ? 'Entrar' : 'Crear cuenta'}
+        label={mode === 'login' ? 'Sign in' : 'Create account'}
       />
 
       {!!message && (

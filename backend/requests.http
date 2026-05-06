@@ -1,0 +1,29 @@
+# Backend API quick requests
+
+### Get root
+GET http://localhost:3000/
+
+### Get all tasks
+GET http://localhost:3000/tasks
+
+### Get single task
+GET http://localhost:3000/tasks/1
+
+### Create new task
+POST http://localhost:3000/tasks
+Content-Type: application/json
+
+{
+  "title": "Mi nueva tarea"
+}
+
+### Update task (mark as done)
+PUT http://localhost:3000/tasks/1
+Content-Type: application/json
+
+{
+  "done": true
+}
+
+### Swagger UI (open in browser)
+GET http://localhost:3000/api/docs

@@ -44,20 +44,29 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
     ...(init?.headers ?? {}),
   };
 
-  const response = await fetch(`${BASE_URL}${path}`, {
-    ...init,
-    headers,
-  });
+  const url = `${BASE_URL}${path}`;
 
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  console.log('[apiRequest] requesting', url, init?.method ?? 'GET');
 
-  if (!response.ok) {
-    const message = data?.message ?? data?.error ?? 'Request failed';
-    throw new Error(Array.isArray(message) ? message.join(', ') : message);
+  try {
+    const response = await fetch(url, {
+      ...init,
+      headers,
+    });
+
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
+
+    if (!response.ok) {
+      const message = data?.message ?? data?.error ?? 'Request failed';
+      throw new Error(Array.isArray(message) ? message.join(', ') : message);
+    }
+
+    return data as T;
+  } catch (err: any) {
+    const userMessage = err?.message ?? String(err);
+    throw new Error(`[apiRequest] fetch failed for ${url}: ${userMessage}`);
   }
-
-  return data as T;
 }
 
 export function getApiBaseUrl() {

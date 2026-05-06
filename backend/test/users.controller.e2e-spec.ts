@@ -41,7 +41,6 @@ describe('UsersController (e2e)', () => {
   });
 
   it('registers a new user and rejects duplicates', async () => {
-    // Register via auth to create a user, then fetch profile via /users/me
     const registerResponse = (await request(app.getHttpServer())
       .post('/auth/register')
       .send({ email, username, password })

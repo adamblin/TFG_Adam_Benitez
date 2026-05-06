@@ -11,7 +11,7 @@ type FormHeaderProps = {
 
 export function FormHeader({ mode = 'login', badgeLabel, title, subtitle }: FormHeaderProps) {
   const resolvedBadge = badgeLabel ?? (mode === 'login' ? 'LOGIN' : 'REGISTER');
-  const resolvedTitle = title ?? (mode === 'login' ? 'Accede a tu cuenta' : 'Crea tu cuenta');
+  const resolvedTitle = title ?? (mode === 'login' ? 'Sign in to your account' : 'Create your account');
 
   return (
     <>

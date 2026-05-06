@@ -5,7 +5,8 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Swagger configuration
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('TFG API')
     .setDescription('API documentation for TFG Adam Benítez')
