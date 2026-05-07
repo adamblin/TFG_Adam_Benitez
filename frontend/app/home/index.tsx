@@ -80,7 +80,6 @@ export default function HomeScreen() {
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm }}>
           <View
             style={{
-              color: colors.background,
               backgroundColor: colors.text,
               borderRadius: 999,
               paddingHorizontal: spacing.sm,

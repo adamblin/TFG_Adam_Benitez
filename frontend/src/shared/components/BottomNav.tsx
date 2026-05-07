@@ -3,12 +3,12 @@ import { View, TouchableOpacity, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, spacing } from '../theme';
 
-interface BottomNavItem {
+export interface BottomNavItem {
   label: string;
   route?: string;
 }
 
-interface BottomNavProps {
+export interface BottomNavProps {
   items?: BottomNavItem[];
 }
 

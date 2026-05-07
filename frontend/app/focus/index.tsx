@@ -1,20 +1,39 @@
-import React, { useState } from 'react';
-import { Alert } from 'react-native';
-import { colors, spacing } from '../../src/shared/theme';
+import React, { useMemo } from 'react';
+import { Alert, Text } from 'react-native';
 import {
   PageShell,
-  Button,
   Card,
   SectionLabel,
   TaskSelector,
   DurationSelector,
 } from '../../src/shared/components';
 import { useTasks } from '../../src/features/tasks/hooks/useTasks';
+import { FocusTimerCard } from '../../src/features/focus/components/FocusTimerCard';
+import { FocusTimerControls } from '../../src/features/focus/components/FocusTimerControls';
+import { useFocusSession } from '../../src/features/focus/hooks/useFocusSession';
+import { styles } from './styles';
 
 export default function FocusScreen() {
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const [selectedDuration, setSelectedDuration] = useState(25);
-  const [showTaskDropdown, setShowTaskDropdown] = useState(false);
+  const {
+    selectedTaskId,
+    setSelectedTaskId,
+    selectedDuration,
+    selectDuration,
+    showTaskDropdown,
+    setShowTaskDropdown,
+    secondsLeft,
+    isRunning,
+    isStarted,
+    formattedTime,
+    progressPercent,
+    startSession,
+    togglePauseResume,
+    stopSession,
+  } = useFocusSession({
+    onSessionComplete: () => {
+      Alert.alert('Focus Session', 'Great work! You completed your focus session.');
+    },
+  });
 
   const { data: tasks = [] } = useTasks();
 
@@ -26,11 +45,25 @@ export default function FocusScreen() {
       Alert.alert('Error', 'Please select a task to focus on');
       return;
     }
-    Alert.alert(
-      'Focus Session',
-      `Starting ${selectedDuration} minute focus session on:\n\n${selectedTask.title}`
-    );
+
+    startSession();
   };
+
+  const statusText = useMemo(() => {
+    if (!isStarted) {
+      return 'Ready to start';
+    }
+
+    if (isRunning) {
+      return `Focusing on ${selectedTask?.title ?? 'task'}`;
+    }
+
+    if (secondsLeft === 0) {
+      return 'Session completed';
+    }
+
+    return 'Session paused';
+  }, [isRunning, isStarted, secondsLeft, selectedTask?.title]);
 
   return (
     <PageShell>
@@ -44,16 +77,16 @@ export default function FocusScreen() {
       />
 
       <SectionLabel>SUBTASK (optional)</SectionLabel>
-      <Card style={{ minHeight: 60, justifyContent: 'center', marginBottom: spacing.lg }}>
-        <Text style={{ color: colors.textMuted, fontSize: 14 }}>Select subtasks...</Text>
+      <Card style={styles.subtaskCard}>
+        <Text style={styles.subtaskText}>Select subtasks...</Text>
       </Card>
 
       <SectionLabel>ANOTHER TASK</SectionLabel>
-      <Card style={{ marginBottom: spacing.lg }}>
-        <Text style={{ color: colors.text, fontSize: 18, fontWeight: '700', marginBottom: spacing.xs }}>
+      <Card style={styles.anotherTaskCard}>
+        <Text style={styles.anotherTaskTitle}>
           Review focus flow
         </Text>
-        <Text style={{ color: colors.textMuted, fontSize: 13 }}>
+        <Text style={styles.anotherTaskSubtitle}>
           Understand the full flow and optimize
         </Text>
       </Card>
@@ -62,17 +95,24 @@ export default function FocusScreen() {
       <DurationSelector
         durations={durations}
         selectedDuration={selectedDuration}
-        onSelect={setSelectedDuration}
+        onSelect={selectDuration}
       />
 
-      <Button
-        label="▶ Start focus session"
-        variant="outline"
-        onPress={handleStartSession}
-        style={{ marginTop: spacing.lg, marginBottom: spacing.lg }}
+      <SectionLabel>TIMER</SectionLabel>
+      <FocusTimerCard
+        formattedTime={formattedTime}
+        statusText={statusText}
+        progressPercent={progressPercent}
+      />
+
+      <FocusTimerControls
+        isRunning={isRunning}
+        isStarted={isStarted}
+        secondsLeft={secondsLeft}
+        onStart={handleStartSession}
+        onPauseResume={togglePauseResume}
+        onStop={stopSession}
       />
     </PageShell>
   );
 }
-
-import { Text } from 'react-native';
