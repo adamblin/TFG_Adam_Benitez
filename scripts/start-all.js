@@ -130,6 +130,18 @@ async function main() {
     writeLine('Building backend...');
     runSync(npmCommand, ['run', 'build'], backendPath);
 
+    writeLine('Clearing port 3000...');
+    if (process.platform === 'win32') {
+      const netstat = spawnSync('netstat', ['-ano'], { encoding: 'utf8', shell: true });
+      const match = (netstat.stdout || '').split('\n').find((l) => l.includes(':3000') && l.includes('LISTENING'));
+      if (match) {
+        const pid = match.trim().split(/\s+/).pop();
+        if (pid) spawnSync('taskkill', ['/PID', pid, '/T', '/F'], { stdio: 'ignore', shell: true });
+      }
+    } else {
+      spawnSync('sh', ['-c', 'lsof -ti:3000 | xargs kill -9'], { stdio: 'ignore' });
+    }
+
     writeLine('Starting backend API in background...');
     backendProcess = runDetached(
       process.execPath,

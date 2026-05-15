@@ -8,34 +8,125 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String   @map("password_hash")
-  username     String   @unique
-  refreshTokens RefreshToken[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String           @id @default(cuid())
+  email           String           @unique
+  passwordHash    String           @map("password_hash")
+  username        String           @unique
+  refreshTokens   RefreshToken[]
+  tasks           Task[]
+  focusSessions   FocusSession[]
+  streak          Streak?
+  userXP          UserXP?
+  inventory       UserInventory[]
+  preferences     UserPreferences?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@map("users")
 }
+
 model RefreshToken {
-  id         String   @id @default(cuid())
-  token      String   @unique
-  expiresAt  DateTime
-  revoked    Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  token     String   @unique
+  expiresAt DateTime
+  revoked   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("refresh_tokens")
 }
 
 model Task {
+  id            String         @id @default(cuid())
+  title         String
+  description   String?
+  completed     Boolean        @default(false)
+  completedAt   DateTime?
+  dueDate       DateTime?
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subtasks      Subtask[]
+  focusSessions FocusSession[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@map("tasks")
+}
+
+model Subtask {
   id        String   @id @default(cuid())
   title     String
-  done      Boolean  @default(false)
+  completed Boolean  @default(false)
+  order     Int      @default(0)
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("tasks")
+  @@map("subtasks")
+}
+
+model FocusSession {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  taskId      String?
+  task        Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  durationMin Int
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  completed   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("focus_sessions")
+}
+
+model UserXP {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalXp         Int       @default(0)
+  coins           Int       @default(0)
+  lastCoinClaimAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("user_xp")
+}
+
+model UserInventory {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, itemId])
+  @@map("user_inventory")
+}
+
+model UserPreferences {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  iconColor String   @default("icon_blue")
+  theme     String   @default("theme_blue")
+  updatedAt DateTime @updatedAt
+
+  @@map("user_preferences")
+}
+
+model Streak {
+  id             String    @id @default(cuid())
+  userId         String    @unique
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak  Int       @default(0)
+  longestStreak  Int       @default(0)
+  lastActiveDate DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@map("streaks")
 }

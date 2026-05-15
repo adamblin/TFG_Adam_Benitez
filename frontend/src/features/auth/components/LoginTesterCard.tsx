@@ -24,8 +24,8 @@ export function LoginTesterCard() {
     <FormShell>
       <FormHeader
         badgeLabel="LOGIN TEST"
-        title="Accede a tu cuenta"
-        subtitle="Formulario simple para probar tu backend con JWT."
+        title="Log in to your account"
+        subtitle="Simple form to test your backend with JWT."
       />
 
       <AppField
@@ -49,11 +49,11 @@ export function LoginTesterCard() {
         onPress={handleLogin}
         disabled={loading}
         loading={loading}
-        label="Entrar"
+        label="Log in"
       />
 
       {!!message && <Text style={styles.message}>{message}</Text>}
-      {!!token && <Text style={styles.message}>Token recibido.</Text>}
+      {!!token && <Text style={styles.message}>Token received.</Text>}
     </FormShell>
   );
 }

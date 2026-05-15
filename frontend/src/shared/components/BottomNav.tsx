@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, TouchableOpacity, Text } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { colors, spacing } from '../theme';
+import { useThemeStore } from '../../store/theme.store';
 
 export interface BottomNavItem {
   label: string;
@@ -12,15 +13,18 @@ export interface BottomNavProps {
   items?: BottomNavItem[];
 }
 
-export function BottomNav({
-  items = [
-    { label: 'Home', route: '/home' },
-    { label: 'Tasks', route: '/tasks' },
-    { label: 'Focus', route: '/focus' },
-    { label: 'Profile', route: '/profile' },
-  ],
-}: BottomNavProps) {
+const DEFAULT_ITEMS: BottomNavItem[] = [
+  { label: 'Home', route: '/home' },
+  { label: 'Tasks', route: '/tasks' },
+  { label: 'Focus', route: '/focus' },
+  { label: 'Shop', route: '/shop' },
+  { label: 'Profile', route: '/profile' },
+];
+
+export function BottomNav({ items = DEFAULT_ITEMS }: BottomNavProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const primaryColor = useThemeStore((s) => s.primaryColor);
 
   return (
     <View
@@ -29,41 +33,57 @@ export function BottomNav({
         left: 0,
         right: 0,
         bottom: 0,
-        backgroundColor: colors.background,
+        backgroundColor: colors.surface,
         borderTopWidth: 1,
         borderTopColor: colors.border,
-        paddingHorizontal: spacing.md,
+        paddingHorizontal: spacing.sm,
         paddingTop: spacing.sm,
-        paddingBottom: spacing.md,
+        paddingBottom: spacing.lg,
         flexDirection: 'row',
-        gap: spacing.sm,
+        alignItems: 'flex-start',
       }}
     >
-      {items.map((item, index) => (
-        <TouchableOpacity
-          key={index}
-          style={{
-            flex: 1,
-            backgroundColor: colors.surface,
-            borderRadius: 999,
-            borderWidth: 1,
-            borderColor: colors.border,
-            paddingVertical: spacing.sm,
-            alignItems: 'center',
-          }}
-          onPress={() => item.route && router.push(item.route)}
-        >
-          <Text
+      {items.map((item) => {
+        const isActive = item.route
+          ? pathname === item.route || pathname.startsWith(item.route + '/')
+          : false;
+
+        return (
+          <TouchableOpacity
+            key={item.route ?? item.label}
+            onPress={() => item.route && router.push(item.route)}
             style={{
-              color: colors.text,
-              fontSize: 12,
-              fontWeight: '700',
+              flex: 1,
+              alignItems: 'center',
+              paddingTop: spacing.md,
+              paddingBottom: spacing.xs,
             }}
           >
-            {item.label}
-          </Text>
-        </TouchableOpacity>
-      ))}
+            {isActive && (
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  width: 20,
+                  height: 2,
+                  borderRadius: 1,
+                  backgroundColor: primaryColor,
+                }}
+              />
+            )}
+            <Text
+              style={{
+                color: isActive ? primaryColor : colors.textMuted,
+                fontSize: 11,
+                fontWeight: isActive ? '800' : '500',
+                textAlign: 'center',
+              }}
+            >
+              {item.label}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "user_xp" ADD COLUMN "coins" INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE "user_xp" ADD COLUMN "lastCoinClaimAt" TIMESTAMP(3);

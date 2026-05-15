@@ -44,7 +44,7 @@ export function useLoginForm() {
           password,
         });
 
-        setMessage({ text: 'Registro correcto. Ahora puedes iniciar sesion.', type: 'success' });
+        setMessage({ text: 'Registered successfully. You can now log in.', type: 'success' });
         setMode('login');
         return;
       }

@@ -16,3 +16,5 @@ export { TaskCard } from './TaskCard';
 export { DecomposeForm } from './DecomposeForm';
 export { TaskSelector } from './TaskSelector';
 export { DurationSelector } from './DurationSelector';
+export { DatePicker } from './DatePicker';
+export { StreakCelebrationOverlay } from './StreakCelebrationOverlay';

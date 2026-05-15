@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { colors, spacing } from '../../src/shared/theme';
 import {
@@ -10,30 +10,48 @@ import {
   SectionLabel,
 } from '../../src/shared/components';
 import { useTasks } from '../../src/features/tasks/hooks/useTasks';
+import { useStreak } from '../../src/features/streaks/hooks/useStreak';
+import { useAuthStore } from '../../src/store/auth.store';
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good Morning';
+  if (hour < 18) return 'Good Afternoon';
+  return 'Good Evening';
+}
 
 export default function HomeScreen() {
   const router = useRouter();
   const { data: tasks = [] } = useTasks();
+  const { data: streak } = useStreak();
+  const currentUser = useAuthStore((state) => state.currentUser);
 
-  const completedTasks = tasks.filter((task) => task.done).length;
+  const completedTasks = tasks.filter((task) => task.completed).length;
   const totalTasks = tasks.length;
   const progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  const username = currentUser?.username ?? 'there';
+  const avatarLetter = (currentUser?.username?.charAt(0) ?? 'U').toUpperCase();
+  const streakValue = `${streak?.currentStreak ?? 0}d`;
+
+  const priorityTask = tasks.find((t) => !t.completed) ?? null;
 
   return (
     <PageShell>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg }}>
         <View style={{ flex: 1, paddingRight: spacing.md }}>
           <Text style={{ color: colors.text, fontSize: 34, fontWeight: '900', marginBottom: spacing.xs }}>
-            Good Morning
+            {getGreeting()}
           </Text>
           <Text style={{ color: colors.textMuted, fontSize: 15, marginBottom: spacing.sm }}>
             A good day to move your goals forward
           </Text>
-          <Text style={{ color: colors.text, fontSize: 14, fontWeight: '700' }}>test_user</Text>
+          <Text style={{ color: colors.text, fontSize: 14, fontWeight: '700' }}>{username}</Text>
         </View>
-        <View
+        <TouchableOpacity
+          onPress={() => router.push('/profile')}
           style={{
-            minWidth: 46,
+            width: 46,
             height: 46,
             borderRadius: 14,
             borderWidth: 1,
@@ -43,8 +61,8 @@ export default function HomeScreen() {
             justifyContent: 'center',
           }}
         >
-          <Text style={{ color: colors.text, fontSize: 20, fontWeight: '900' }}>5d</Text>
-        </View>
+          <Text style={{ color: colors.primary, fontSize: 18, fontWeight: '900' }}>{avatarLetter}</Text>
+        </TouchableOpacity>
       </View>
 
       <ProgressCard percent={progressPercent} completed={completedTasks} total={totalTasks} />
@@ -52,7 +70,7 @@ export default function HomeScreen() {
       <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg }}>
         <StatCard value={totalTasks} label="Tasks" />
         <StatCard value={completedTasks} label="Done" />
-        <StatCard value="5d" label="Streak" />
+        <StatCard value={streakValue} label="Streak" />
       </View>
 
       <SectionLabel>QUICK ACTIONS</SectionLabel>
@@ -63,53 +81,63 @@ export default function HomeScreen() {
         <ActionCard title="Week" subtitle="Load overview" onPress={() => router.push('/tasks')} />
       </View>
 
-      <SectionLabel>PRIORITY NOW</SectionLabel>
-      <View
-        style={{
-          backgroundColor: colors.surface,
-          borderRadius: 14,
-          borderWidth: 1,
-          borderColor: colors.border,
-          padding: spacing.md,
-          marginBottom: spacing.lg,
-        }}
-      >
-        <Text style={{ color: colors.text, fontSize: 36, fontWeight: '900', lineHeight: 40, marginBottom: spacing.sm }}>
-          Prepare frontend demo
-        </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm }}>
+      {priorityTask && (
+        <>
+          <SectionLabel>PRIORITY NOW</SectionLabel>
           <View
             style={{
-              backgroundColor: colors.text,
-              borderRadius: 999,
-              paddingHorizontal: spacing.sm,
-              paddingVertical: 2,
+              backgroundColor: colors.surface,
+              borderRadius: 14,
+              borderWidth: 1,
+              borderColor: colors.border,
+              padding: spacing.md,
+              marginBottom: spacing.lg,
             }}
           >
-            <Text style={{ color: colors.background, fontSize: 11, fontWeight: '700' }}>Today</Text>
+            <Text style={{ color: colors.text, fontSize: 28, fontWeight: '900', lineHeight: 34, marginBottom: spacing.sm }}>
+              {priorityTask.title}
+            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.sm }}>
+              <View
+                style={{
+                  backgroundColor: colors.text,
+                  borderRadius: 999,
+                  paddingHorizontal: spacing.sm,
+                  paddingVertical: 2,
+                }}
+              >
+                <Text style={{ color: colors.background, fontSize: 11, fontWeight: '700' }}>Priority</Text>
+              </View>
+              <Text style={{ color: colors.textMuted, fontSize: 13, flex: 1 }}>
+                {priorityTask.subtasks.length > 0
+                  ? `${priorityTask.subtasks.filter((s) => s.completed).length}/${priorityTask.subtasks.length} subtasks done`
+                  : 'Focus this task right now'}
+              </Text>
+            </View>
+            {priorityTask.subtasks.length > 0 && (
+              <View
+                style={{
+                  height: 10,
+                  borderRadius: 999,
+                  backgroundColor: colors.background,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  overflow: 'hidden',
+                }}
+              >
+                <View
+                  style={{
+                    width: `${Math.round((priorityTask.subtasks.filter((s) => s.completed).length / priorityTask.subtasks.length) * 100)}%`,
+                    height: '100%',
+                    borderRadius: 999,
+                    backgroundColor: colors.primary,
+                  }}
+                />
+              </View>
+            )}
           </View>
-          <Text style={{ color: colors.textMuted, fontSize: 13, flex: 1 }}>Focus this task right now</Text>
-        </View>
-        <View
-          style={{
-            height: 10,
-            borderRadius: 999,
-            backgroundColor: '#0d162a',
-            borderWidth: 1,
-            borderColor: colors.border,
-            overflow: 'hidden',
-          }}
-        >
-          <View
-            style={{
-              width: '30%',
-              height: '100%',
-              borderRadius: 999,
-              backgroundColor: colors.primary,
-            }}
-          />
-        </View>
-      </View>
+        </>
+      )}
     </PageShell>
   );
 }

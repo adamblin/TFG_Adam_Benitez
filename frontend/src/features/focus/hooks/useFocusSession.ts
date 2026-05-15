@@ -1,29 +1,34 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Alert } from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
+import { startFocusSession, endFocusSession } from '../../../services/focus.service';
+import { useStreakCelebrationStore } from '../../../store/streak-celebration.store';
 
 type UseFocusSessionOptions = {
-  onSessionComplete?: () => void;
+  initialTaskId?: string | null;
 };
 
 export function useFocusSession(options?: UseFocusSessionOptions) {
-  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(options?.initialTaskId ?? null);
   const [selectedDuration, setSelectedDuration] = useState(25);
-  const [showTaskDropdown, setShowTaskDropdown] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [needCompletion, setNeedCompletion] = useState(false);
+  const sessionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!isRunning || secondsLeft <= 0) {
-      return;
-    }
+    if (!isRunning || secondsLeft <= 0) return;
 
     const timer = setInterval(() => {
       setSecondsLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
           setIsRunning(false);
-          options?.onSessionComplete?.();
+          setNeedCompletion(true);
           return 0;
         }
         return prev - 1;
@@ -31,50 +36,88 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isRunning, secondsLeft, options]);
+  }, [isRunning, secondsLeft]);
+
+  useEffect(() => {
+    if (!needCompletion) return;
+    setNeedCompletion(false);
+
+    const sid = sessionIdRef.current;
+    if (!sid) return;
+
+    endFocusSession({ sessionId: sid, completed: true })
+      .then(({ message }) => {
+        sessionIdRef.current = null;
+        queryClient.invalidateQueries({ queryKey: ['focus-sessions'] });
+        queryClient.invalidateQueries({ queryKey: ['streak'] });
+        queryClient.invalidateQueries({ queryKey: ['user-xp'] });
+        useStreakCelebrationStore.getState().show();
+        Alert.alert('Session complete', message);
+      })
+      .catch(() => {
+        sessionIdRef.current = null;
+        Alert.alert('Session complete', 'Great work! Your session has been recorded.');
+      });
+  }, [needCompletion, queryClient]);
 
   const formattedTime = useMemo(() => {
-    const minutes = Math.floor(secondsLeft / 60);
-    const seconds = secondsLeft % 60;
+    const displaySeconds = isStarted ? secondsLeft : selectedDuration * 60;
+    const minutes = Math.floor(displaySeconds / 60);
+    const seconds = displaySeconds % 60;
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  }, [secondsLeft]);
+  }, [secondsLeft, selectedDuration, isStarted]);
 
   const progressPercent = useMemo(() => {
-    if (!totalSeconds) {
-      return 0;
-    }
-
+    if (!isStarted || !totalSeconds) return 0;
     return Math.round(((totalSeconds - secondsLeft) / totalSeconds) * 100);
-  }, [secondsLeft, totalSeconds]);
+  }, [secondsLeft, totalSeconds, isStarted]);
 
-  const startSession = () => {
-    const durationInSeconds = selectedDuration * 60;
-    setTotalSeconds(durationInSeconds);
-    setSecondsLeft(durationInSeconds);
-    setIsStarted(true);
-    setIsRunning(true);
+  const startSession = async () => {
+    if (isLoading || isStarted) return;
+    setIsLoading(true);
+    try {
+      const session = await startFocusSession({
+        durationMin: selectedDuration,
+        taskId: selectedTaskId,
+      });
+      sessionIdRef.current = session.id;
+      const durationInSeconds = selectedDuration * 60;
+      setTotalSeconds(durationInSeconds);
+      setSecondsLeft(durationInSeconds);
+      setIsStarted(true);
+      setIsRunning(true);
+    } catch {
+      Alert.alert('Error', 'Could not start the focus session. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const togglePauseResume = () => {
-    if (!isStarted || secondsLeft === 0) {
-      return;
-    }
-
+    if (!isStarted || secondsLeft === 0) return;
     setIsRunning((prev) => !prev);
   };
 
-  const stopSession = () => {
+  const stopSession = async () => {
+    const sid = sessionIdRef.current;
+    sessionIdRef.current = null;
     setIsRunning(false);
     setIsStarted(false);
     setSecondsLeft(0);
     setTotalSeconds(0);
+
+    if (sid) {
+      try {
+        await endFocusSession({ sessionId: sid, completed: false });
+        queryClient.invalidateQueries({ queryKey: ['focus-sessions'] });
+      } catch {
+        // session remains as incomplete in backend — acceptable
+      }
+    }
   };
 
   const selectDuration = (duration: number) => {
-    if (isRunning) {
-      return;
-    }
-
+    if (isStarted) return;
     setSelectedDuration(duration);
   };
 
@@ -83,11 +126,10 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
     setSelectedTaskId,
     selectedDuration,
     selectDuration,
-    showTaskDropdown,
-    setShowTaskDropdown,
     secondsLeft,
     isRunning,
     isStarted,
+    isLoading,
     formattedTime,
     progressPercent,
     startSession,

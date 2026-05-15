@@ -11,11 +11,9 @@ export function ProgressBar({ percent, style }: ProgressBarProps) {
     <View
       style={[
         {
-          height: 12,
+          height: 8,
           borderRadius: 999,
-          backgroundColor: '#0d162a',
-          borderWidth: 1,
-          borderColor: colors.border,
+          backgroundColor: colors.background,
           overflow: 'hidden',
         },
         style,

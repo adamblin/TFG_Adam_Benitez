@@ -3,19 +3,24 @@ import { colors, spacing } from '../../../shared/theme';
 
 export const styles = StyleSheet.create({
   card: {
+    padding: spacing.lg,
     marginBottom: spacing.lg,
   },
   time: {
-    color: colors.text,
-    fontSize: 44,
+    color: colors.primary,
+    fontSize: 64,
     fontWeight: '900',
     textAlign: 'center',
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    fontFamily: 'monospace',
+    letterSpacing: 2,
   },
   status: {
     color: colors.textMuted,
-    fontSize: 13,
+    fontSize: 14,
+    fontWeight: '500',
     textAlign: 'center',
     marginBottom: spacing.md,
+    lineHeight: 20,
   },
 });

@@ -39,9 +39,13 @@ function inferBaseUrl() {
 const BASE_URL = inferBaseUrl();
 
 export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T> {
-  const headers = {
+  const { useAuthStore } = await import('../store/auth.store');
+  const token = useAuthStore.getState().accessToken;
+
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...(init?.headers ?? {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    ...((init?.headers as Record<string, string>) ?? {}),
   };
 
   const url = `${BASE_URL}${path}`;

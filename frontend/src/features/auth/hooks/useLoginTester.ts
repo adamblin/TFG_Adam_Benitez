@@ -27,7 +27,7 @@ export function useLoginTester(): UseLoginTesterState {
     try {
       const data = await login({ username: username.trim(), password });
       setToken(data.token);
-      setMessage('Login correcto. Token recibido.');
+      setMessage('Login successful. Token received.');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unexpected error');
     } finally {

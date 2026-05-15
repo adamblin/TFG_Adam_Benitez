@@ -15,13 +15,15 @@ export function Button({ label, variant = 'primary', style, ...props }: ButtonPr
           button: {
             backgroundColor: colors.primary,
             paddingVertical: spacing.md,
-            borderRadius: 10,
+            borderRadius: 12,
             alignItems: 'center' as const,
+            borderWidth: 0,
           },
           label: {
-            color: colors.text,
+            color: colors.background,
             fontSize: 16,
             fontWeight: '700' as const,
+            letterSpacing: 0.5,
           },
         };
       case 'secondary':
@@ -29,15 +31,16 @@ export function Button({ label, variant = 'primary', style, ...props }: ButtonPr
           button: {
             backgroundColor: colors.surface,
             paddingVertical: spacing.md,
-            borderRadius: 10,
+            borderRadius: 12,
             alignItems: 'center' as const,
-            borderWidth: 1,
+            borderWidth: 2,
             borderColor: colors.border,
           },
           label: {
             color: colors.text,
-            fontSize: 16,
-            fontWeight: '700' as const,
+            fontSize: 15,
+            fontWeight: '600' as const,
+            letterSpacing: 0.3,
           },
         };
       case 'outline':

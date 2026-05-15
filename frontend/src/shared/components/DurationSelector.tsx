@@ -23,7 +23,7 @@ export function DurationSelector({
             minWidth: '22%',
             backgroundColor: selectedDuration === duration ? colors.primary : colors.surface,
             borderRadius: 12,
-            borderWidth: 1,
+            borderWidth: 2,
             borderColor: selectedDuration === duration ? colors.primary : colors.border,
             paddingVertical: spacing.md,
             alignItems: 'center',
@@ -33,9 +33,10 @@ export function DurationSelector({
         >
           <Text
             style={{
-              color: colors.text,
+              color: selectedDuration === duration ? colors.background : colors.text,
               fontSize: 16,
-              fontWeight: selectedDuration === duration ? '900' : '700',
+              fontWeight: '700',
+              letterSpacing: 0.5,
             }}
           >
             {duration}m
