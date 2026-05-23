@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../shared/theme';
+import { type ColorPalette, spacing } from '../../../shared/theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
   cardTitle: {
     color: colors.text,
     fontSize: 14,

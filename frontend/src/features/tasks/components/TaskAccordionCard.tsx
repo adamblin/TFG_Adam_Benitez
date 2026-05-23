@@ -1,8 +1,10 @@
-import React, { useMemo, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import React, { useMemo, useRef, useState } from 'react';
+import { Pressable, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Card, DatePicker } from '../../../shared/components';
-import { colors } from '../../../shared/theme';
-import { styles } from './TaskAccordionCard.styles';
+import { useTheme } from '../../../shared/theme';
+import type { ColorPalette } from '../../../shared/theme';
+import { makeStyles } from './TaskAccordionCard.styles';
 
 export type TaskAccordionSubtask = {
   id: string;
@@ -24,9 +26,11 @@ type TaskAccordionCardProps = {
   onDeleteSubtask: (subtaskId: string) => void;
   onToggleSubtask: (subtaskId: string, completed: boolean) => void;
   onDueDateChange?: (date: string | null) => void;
+  onUpdateTitle?: (title: string) => void;
+  onUpdateSubtask?: (subtaskId: string, title: string) => void;
 };
 
-function formatDueChip(dueDate: string | null): { label: string; color: string } {
+function formatDueChip(dueDate: string | null, colors: ColorPalette): { label: string; color: string } {
   if (!dueDate) return { label: '+ Due date', color: colors.textMuted };
   const dateOnly = dueDate.slice(0, 10);
   const due = new Date(`${dateOnly}T00:00:00`);
@@ -56,9 +60,37 @@ export function TaskAccordionCard({
   onDeleteSubtask,
   onToggleSubtask,
   onDueDateChange,
+  onUpdateTitle,
+  onUpdateSubtask,
 }: TaskAccordionCardProps) {
-  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
-  const [calOpen, setCalOpen]       = useState(false);
+  const colors = useTheme();
+  const styles = makeStyles(colors);
+  const [isExpanded, setIsExpanded]       = useState(defaultExpanded);
+  const [calOpen, setCalOpen]             = useState(false);
+  const [editingTitle, setEditingTitle]   = useState(false);
+  const [titleDraft, setTitleDraft]       = useState(title);
+  const [editingSubId, setEditingSubId]   = useState<string | null>(null);
+  const [subDraft, setSubDraft]           = useState('');
+  const titleInputRef                     = useRef<TextInput>(null);
+
+  const commitTitle = () => {
+    const trimmed = titleDraft.trim();
+    if (trimmed && trimmed !== title) onUpdateTitle?.(trimmed);
+    else setTitleDraft(title);
+    setEditingTitle(false);
+  };
+
+  const startEditSub = (sub: TaskAccordionSubtask) => {
+    setEditingSubId(sub.id);
+    setSubDraft(sub.title);
+  };
+
+  const commitSub = (subtaskId: string, original: string) => {
+    const trimmed = subDraft.trim();
+    if (trimmed && trimmed !== original) onUpdateSubtask?.(subtaskId, trimmed);
+    else setSubDraft(original);
+    setEditingSubId(null);
+  };
 
   const completedCount = useMemo(() => subtasks.filter((s) => s.completed).length, [subtasks]);
   const progressPercent = useMemo(() => {
@@ -71,7 +103,7 @@ export function TaskAccordionCard({
     [accentColor]
   );
 
-  const due = formatDueChip(dueDate);
+  const due = formatDueChip(dueDate, colors);
 
   const handleDueDateChange = (date: string | null) => {
     onDueDateChange?.(date);
@@ -81,8 +113,26 @@ export function TaskAccordionCard({
   return (
     <Card style={[styles.card, { borderLeftColor: accentColor }]}>
       <View style={styles.header}>
-        <Pressable style={styles.titleBlock} onPress={() => setIsExpanded((v) => !v)}>
-          <Text style={styles.title}>{title}</Text>
+        <Pressable style={styles.titleBlock} onPress={() => !editingTitle && setIsExpanded((v) => !v)}>
+          {editingTitle ? (
+            <TextInput
+              ref={titleInputRef}
+              value={titleDraft}
+              onChangeText={setTitleDraft}
+              onBlur={commitTitle}
+              onSubmitEditing={commitTitle}
+              autoFocus
+              returnKeyType="done"
+              style={[styles.title, {
+                borderBottomWidth: 1,
+                borderBottomColor: accentColor,
+                paddingVertical: 2,
+                color: colors.text,
+              }]}
+            />
+          ) : (
+            <Text style={styles.title}>{title}</Text>
+          )}
           <View style={styles.metaRow}>
             <View style={[styles.priorityChip, priorityStyles]}>
               <View style={[styles.priorityDot, { backgroundColor: accentColor }]} />
@@ -116,13 +166,23 @@ export function TaskAccordionCard({
 
         <View style={styles.actions}>
           <Pressable style={styles.actionButton} onPress={onFocusPress}>
-            <Text style={styles.actionText}>Focus</Text>
+            <Ionicons name="timer-outline" size={20} color={colors.focusSession} />
+          </Pressable>
+          <Pressable
+            style={styles.actionButton}
+            onPress={() => { setTitleDraft(title); setEditingTitle(true); }}
+          >
+            <Ionicons name="pencil-outline" size={18} color={colors.textMuted} />
           </Pressable>
           <Pressable style={styles.actionButton} onPress={onDeletePress}>
-            <Text style={styles.actionText}>Delete</Text>
+            <Ionicons name="trash-outline" size={18} color={colors.error} />
           </Pressable>
           <Pressable style={styles.actionButton} onPress={() => setIsExpanded((v) => !v)}>
-            <Text style={styles.expandText}>{isExpanded ? 'v' : '>'}</Text>
+            <Ionicons
+              name={isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'}
+              size={20}
+              color={colors.textMuted}
+            />
           </Pressable>
         </View>
       </View>
@@ -171,26 +231,54 @@ export function TaskAccordionCard({
             <View key={item.id} style={styles.subtaskRow}>
               <Pressable
                 style={styles.subtaskToggle}
-                onPress={() => onToggleSubtask(item.id, !item.completed)}
+                onPress={() => editingSubId !== item.id && onToggleSubtask(item.id, !item.completed)}
               >
                 <View style={[styles.subtaskCheckbox, item.completed && styles.subtaskCheckboxActive]}>
                   {item.completed ? <Text style={styles.subtaskCheck}>✓</Text> : null}
                 </View>
-                <Text style={[styles.subtaskTitle, item.completed && styles.subtaskTitleDone]}>
-                  {item.title}
-                </Text>
-                {item.badge ? (
+
+                {editingSubId === item.id ? (
+                  <TextInput
+                    value={subDraft}
+                    onChangeText={setSubDraft}
+                    onBlur={() => commitSub(item.id, item.title)}
+                    onSubmitEditing={() => commitSub(item.id, item.title)}
+                    autoFocus
+                    returnKeyType="done"
+                    style={[styles.subtaskTitle, {
+                      flex: 1,
+                      borderBottomWidth: 1,
+                      borderBottomColor: accentColor,
+                      paddingVertical: 1,
+                      color: colors.text,
+                    }]}
+                  />
+                ) : (
+                  <Text style={[styles.subtaskTitle, item.completed && styles.subtaskTitleDone]}>
+                    {item.title}
+                  </Text>
+                )}
+
+                {item.badge && editingSubId !== item.id ? (
                   <View style={styles.subtaskBadge}>
                     <Text style={styles.subtaskBadgeText}>{item.badge}</Text>
                   </View>
                 ) : null}
+              </Pressable>
+
+              <Pressable
+                onPress={() => startEditSub(item)}
+                hitSlop={8}
+                style={styles.subtaskDeleteBtn}
+              >
+                <Ionicons name="pencil-outline" size={13} color={colors.textMuted} />
               </Pressable>
               <Pressable
                 onPress={() => onDeleteSubtask(item.id)}
                 hitSlop={8}
                 style={styles.subtaskDeleteBtn}
               >
-                <Text style={styles.subtaskDeleteText}>×</Text>
+                <Ionicons name="close" size={14} color={colors.error} />
               </Pressable>
             </View>
           ))}

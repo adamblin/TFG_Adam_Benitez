@@ -2,7 +2,8 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { Card } from '../../../shared/components';
-import { styles } from './ChartCards.styles';
+import { makeStyles } from './ChartCards.styles';
+import { useTheme } from '../../../shared/theme';
 
 interface CompletionDonutCardProps {
   completed: number;
@@ -10,6 +11,8 @@ interface CompletionDonutCardProps {
 }
 
 export function CompletionDonutCard({ completed, pending }: CompletionDonutCardProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   const total = completed + pending;
   const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 

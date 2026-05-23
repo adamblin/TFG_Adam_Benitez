@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { FocusSessionsRepository } from '../../domain/repositories/focus-sessions.repository';
 import { StreaksService } from 'src/modules/streaks/application/streaks.service';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
@@ -23,7 +27,8 @@ export class EndSessionUseCase {
   async execute(input: EndSessionInput): Promise<EndSessionResult> {
     const session = await this.repo.findById(input.sessionId);
     if (!session) throw new NotFoundException('Session not found');
-    if (session.userId !== input.userId) throw new ForbiddenException('Access denied');
+    if (session.userId !== input.userId)
+      throw new ForbiddenException('Access denied');
 
     const updated = await this.repo.update(input.sessionId, {
       endedAt: new Date(),
@@ -35,7 +40,9 @@ export class EndSessionUseCase {
     if (input.completed) {
       const xpGained = updated.durationMin * 2;
       await this.xpService.awardXP(input.userId, xpGained);
-      const { streak, isNewRecord } = await this.streaksService.recordActivity(input.userId);
+      const { streak, isNewRecord } = await this.streaksService.recordActivity(
+        input.userId,
+      );
       const sessionsToday = await this.repo.countCompletedToday(input.userId);
       message = this.notificationsService.getSessionCompleteMessage({
         currentStreak: streak.currentStreak,

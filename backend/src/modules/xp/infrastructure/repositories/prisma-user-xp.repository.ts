@@ -19,10 +19,19 @@ export class PrismaUserXPRepository implements UserXPRepository {
     });
   }
 
-  async addCoins(userId: string, amount: number, claimDate?: Date): Promise<UserXPEntity> {
+  async addCoins(
+    userId: string,
+    amount: number,
+    claimDate?: Date,
+  ): Promise<UserXPEntity> {
     return this.prisma.userXP.upsert({
       where: { userId },
-      create: { userId, totalXp: 0, coins: amount, lastCoinClaimAt: claimDate ?? null },
+      create: {
+        userId,
+        totalXp: 0,
+        coins: amount,
+        lastCoinClaimAt: claimDate ?? null,
+      },
       update: {
         coins: { increment: amount },
         ...(claimDate ? { lastCoinClaimAt: claimDate } : {}),

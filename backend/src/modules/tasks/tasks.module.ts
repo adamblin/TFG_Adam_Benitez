@@ -6,6 +6,7 @@ import { CreateTaskUseCase } from './application/use-cases/create-task.use-case'
 import { UpdateTaskUseCase } from './application/use-cases/update-task.use-case';
 import { DeleteTaskUseCase } from './application/use-cases/delete-task.use-case';
 import { GetTaskByIdUseCase } from './application/use-cases/get-task-by-id.use-case';
+import { BreakdownTaskUseCase } from './application/use-cases/breakdown-task.use-case';
 import { TasksRepository } from './domain/repositories/tasks.repository';
 import { PrismaTasksRepository } from './infrastructure/repositories/prisma-tasks.repository';
 
@@ -18,6 +19,7 @@ import { PrismaTasksRepository } from './infrastructure/repositories/prisma-task
     UpdateTaskUseCase,
     DeleteTaskUseCase,
     GetTaskByIdUseCase,
+    BreakdownTaskUseCase,
     {
       provide: TasksRepository,
       useClass: PrismaTasksRepository,

@@ -3,7 +3,9 @@ import { PrismaService } from 'src/infrastructure/prisma/prisma.service';
 import { TaskEntity } from '../../domain/entities/task.entity';
 import { TasksRepository } from '../../domain/repositories/tasks.repository';
 
-const SUBTASK_ORDER = { orderBy: [{ order: 'asc' as const }, { createdAt: 'asc' as const }] };
+const SUBTASK_ORDER = {
+  orderBy: [{ order: 'asc' as const }, { createdAt: 'asc' as const }],
+};
 
 @Injectable()
 export class PrismaTasksRepository implements TasksRepository {
@@ -14,7 +16,7 @@ export class PrismaTasksRepository implements TasksRepository {
       where: { userId },
       orderBy: { createdAt: 'desc' },
       include: { subtasks: SUBTASK_ORDER },
-    }) as Promise<TaskEntity[]>;
+    });
   }
 
   createForUser(input: {
@@ -31,31 +33,43 @@ export class PrismaTasksRepository implements TasksRepository {
         dueDate: input.dueDate,
       },
       include: { subtasks: SUBTASK_ORDER },
-    }) as Promise<TaskEntity>;
+    });
   }
 
   findById(taskId: string): Promise<TaskEntity | null> {
     return this.prisma.task.findUnique({
       where: { id: taskId },
       include: { subtasks: SUBTASK_ORDER },
-    }) as Promise<TaskEntity | null>;
+    });
   }
 
   update(
     taskId: string,
-    input: { title?: string; description?: string | null; completed?: boolean; completedAt?: Date | null; dueDate?: Date | null },
+    input: {
+      title?: string;
+      description?: string | null;
+      completed?: boolean;
+      completedAt?: Date | null;
+      dueDate?: Date | null;
+    },
   ): Promise<TaskEntity> {
     return this.prisma.task.update({
       where: { id: taskId },
       data: {
         ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.description !== undefined ? { description: input.description } : {}),
-        ...(input.completed !== undefined ? { completed: input.completed } : {}),
-        ...(input.completedAt !== undefined ? { completedAt: input.completedAt } : {}),
+        ...(input.description !== undefined
+          ? { description: input.description }
+          : {}),
+        ...(input.completed !== undefined
+          ? { completed: input.completed }
+          : {}),
+        ...(input.completedAt !== undefined
+          ? { completedAt: input.completedAt }
+          : {}),
         ...(input.dueDate !== undefined ? { dueDate: input.dueDate } : {}),
       },
       include: { subtasks: SUBTASK_ORDER },
-    }) as Promise<TaskEntity>;
+    });
   }
 
   delete(taskId: string): Promise<void> {

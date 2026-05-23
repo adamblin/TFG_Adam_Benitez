@@ -1,6 +1,7 @@
 import { Text, View } from 'react-native';
 import type { FormMode } from '../hooks/useLoginForm';
-import { styles } from './FormHeader.styles';
+import { makeStyles } from './FormHeader.styles';
+import { useTheme } from '../../../shared/theme';
 
 type FormHeaderProps = {
   mode?: FormMode;
@@ -10,6 +11,8 @@ type FormHeaderProps = {
 };
 
 export function FormHeader({ mode = 'login', badgeLabel, title, subtitle }: FormHeaderProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   const resolvedBadge = badgeLabel ?? (mode === 'login' ? 'LOGIN' : 'REGISTER');
   const resolvedTitle = title ?? (mode === 'login' ? 'Sign in to your account' : 'Create your account');
 

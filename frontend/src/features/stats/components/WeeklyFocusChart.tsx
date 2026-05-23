@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 import type { WeeklyChartData } from '../hooks/useStatsDashboard';
 
 const BAR_AREA_H = 130;
@@ -18,6 +18,7 @@ function fmtMin(m: number): string {
 }
 
 function Delta({ thisVal, lastVal }: { thisVal: number; lastVal: number }) {
+  const colors = useTheme();
   if (lastVal === 0) return null;
   const pct = Math.round(((thisVal - lastVal) / lastVal) * 100);
   const up = pct >= 0;
@@ -43,6 +44,7 @@ interface Props {
 }
 
 export function WeeklyFocusChart({ data }: Props) {
+  const colors = useTheme();
   const { labels, focusThis, focusLast, tasks, subtasks, todayIdx, totalFocusThis, totalFocusLast } = data;
 
   const maxVal = Math.max(...focusThis, ...focusLast, 1);

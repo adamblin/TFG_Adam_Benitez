@@ -2,9 +2,9 @@ import React from 'react';
 import { Text, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { Card } from '../../../shared/components';
-import { colors } from '../../../shared/theme';
+import { useTheme } from '../../../shared/theme';
 import { StatsPeriod } from '../hooks/useStatsDashboard';
-import { styles } from './ChartCards.styles';
+import { makeStyles } from './ChartCards.styles';
 
 interface SubtasksChartCardProps {
   period: StatsPeriod;
@@ -13,6 +13,8 @@ interface SubtasksChartCardProps {
 }
 
 export function SubtasksChartCard({ period, labels, data }: SubtasksChartCardProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   const { width } = useWindowDimensions();
   const chartWidth = Math.max(280, width - 56);
 
@@ -20,7 +22,7 @@ export function SubtasksChartCard({ period, labels, data }: SubtasksChartCardPro
     <Card style={styles.cardSpacing}>
       <Text style={styles.cardTitle}>Completed Subtasks ({period === 'annual' ? 'By Quarter' : 'Trend'})</Text>
       <LineChart
-        data={{ labels, datasets: [{ data, color: () => '#34C759' }] }}
+        data={{ labels, datasets: [{ data, color: () => colors.subtask }] }}
         width={chartWidth}
         height={220}
         yAxisSuffix=""
@@ -38,7 +40,7 @@ export function SubtasksChartCard({ period, labels, data }: SubtasksChartCardPro
           propsForDots: {
             r: '4',
             strokeWidth: '2',
-            stroke: '#34C759',
+            stroke: colors.subtask,
           },
           propsForBackgroundLines: {
             stroke: '#2d3a50',

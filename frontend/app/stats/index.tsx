@@ -1,7 +1,8 @@
 import React from 'react';
-import { Text } from 'react-native';
+import { View, Text } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { PageShell, SectionLabel } from '../../src/shared/components';
-import { colors, spacing } from '../../src/shared/theme';
+import { useTheme, spacing } from '../../src/shared/theme';
 import {
   AnnualCalendarHeatmap,
   BarChartCard,
@@ -13,9 +14,9 @@ import {
   TodayBanner,
 } from '../../src/features/stats/components';
 import { useStatsDashboard } from '../../src/features/stats/hooks/useStatsDashboard';
-import { styles } from './styles';
 
 export default function StatsScreen() {
+  const colors = useTheme();
   const {
     period,
     setPeriod,
@@ -36,10 +37,29 @@ export default function StatsScreen() {
 
   return (
     <PageShell>
-      <Text style={styles.title}>Statistics</Text>
-      <Text style={{ color: colors.textMuted, fontSize: 15, marginBottom: spacing.lg }}>
-        Track your focus and productivity
-      </Text>
+      {/* Header */}
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: spacing.lg }}>
+        <View>
+          <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: '600', marginBottom: 2 }}>
+            Your progress
+          </Text>
+          <Text style={{ color: colors.text, fontSize: 28, fontWeight: '900', lineHeight: 32 }}>
+            Statistics
+          </Text>
+        </View>
+        <View style={{
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: `${colors.focusSession}20`,
+          borderWidth: 1,
+          borderColor: `${colors.focusSession}40`,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Ionicons name="bar-chart" size={20} color={colors.focusSession} />
+        </View>
+      </View>
 
       <TodayBanner today={today} />
 
@@ -73,20 +93,20 @@ export default function StatsScreen() {
             title="Focus Time"
             labels={focusSeries.labels}
             data={focusSeries.data}
-            color={colors.primary}
+            color={colors.focusSession}
             yAxisSuffix="m"
           />
           <BarChartCard
             title="Tasks Done"
             labels={tasksSeries.labels}
             data={tasksSeries.data}
-            color={colors.success}
+            color={colors.task}
           />
           <BarChartCard
             title="Subtasks Done"
             labels={subtasksSeries.labels}
             data={subtasksSeries.data}
-            color="#F5A623"
+            color={colors.subtask}
           />
         </>
       )}

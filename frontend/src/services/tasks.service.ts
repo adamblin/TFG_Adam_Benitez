@@ -60,3 +60,17 @@ export function toggleSubtask(subtaskId: string, completed: boolean): Promise<Su
     body: JSON.stringify({ completed }),
   });
 }
+
+export function updateSubtask(subtaskId: string, title: string): Promise<Subtask> {
+  return apiRequest<Subtask>(`/subtasks/${subtaskId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ title }),
+  });
+}
+
+export function breakdownTask(title: string): Promise<{ title: string; subtasks: string[] }> {
+  return apiRequest<{ title: string; subtasks: string[] }>('/tasks/breakdown', {
+    method: 'POST',
+    body: JSON.stringify({ title }),
+  });
+}

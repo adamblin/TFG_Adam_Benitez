@@ -1,6 +1,7 @@
 import { Text, View, type KeyboardTypeOptions, type TextInputProps } from 'react-native';
 import { AppInput } from './AppInput';
-import { styles } from './AppField.styles';
+import { makeStyles } from './AppField.styles';
+import { useTheme } from '../theme';
 
 type AppFieldProps = {
   label: string;
@@ -27,6 +28,8 @@ export function AppField({
   autoCapitalize,
   autoCorrect,
 }: AppFieldProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>

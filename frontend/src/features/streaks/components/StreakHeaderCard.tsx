@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 
 type Props = { days: number };
 
 export function StreakHeaderCard({ days }: Props) {
+  const colors = useTheme();
   return (
     <Card style={{ padding: spacing.lg, marginBottom: spacing.lg, borderRadius: 16 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

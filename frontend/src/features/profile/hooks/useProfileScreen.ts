@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useRouter } from 'expo-router';
 import { useTasks } from '../../tasks/hooks/useTasks';
 import { useFocusSessions } from '../../focus/hooks/useFocusSessions';
 import { useStreak } from '../../streaks/hooks/useStreak';
@@ -23,7 +22,6 @@ function formatMinutes(min: number): string {
 }
 
 export function useProfileScreen() {
-  const router = useRouter();
   const currentUser = useAuthStore((state) => state.currentUser);
   const clearSession = useAuthStore((state) => state.clearSession);
   const { data: tasks = [] } = useTasks();
@@ -81,7 +79,6 @@ export function useProfileScreen() {
 
   const handleLogout = () => {
     clearSession();
-    router.replace('/auth/login');
   };
 
   return {

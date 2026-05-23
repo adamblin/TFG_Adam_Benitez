@@ -8,6 +8,7 @@ import {
   equipItem,
 } from '../../../services/shop.service';
 import { useThemeStore } from '../../../store/theme.store';
+import { useAuthStore } from '../../../store/auth.store';
 
 export function useShopCatalog() {
   return useQuery({
@@ -19,11 +20,13 @@ export function useShopCatalog() {
 
 export function usePreferences() {
   const setPreferences = useThemeStore((s) => s.setPreferences);
+  const accessToken = useAuthStore((s) => s.accessToken);
 
   const query = useQuery({
     queryKey: ['shop-preferences'],
     queryFn: getPreferences,
     staleTime: 1000 * 60 * 5,
+    enabled: !!accessToken,
   });
 
   useEffect(() => {

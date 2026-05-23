@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { SubtasksRepository } from '../../domain/repositories/subtasks.repository';
 import { TasksRepository } from 'src/modules/tasks/domain/repositories/tasks.repository';
 import { XPService } from 'src/modules/xp/application/xp.service';
@@ -21,11 +25,13 @@ export class UpdateSubtaskUseCase {
     if (!subtask) throw new NotFoundException('Subtask not found');
 
     const task = await this.tasksRepository.findById(subtask.taskId);
-    if (!task || task.userId !== input.userId) throw new ForbiddenException('Access denied');
+    if (!task || task.userId !== input.userId)
+      throw new ForbiddenException('Access denied');
 
-    const title = input.title !== undefined
-      ? (input.title.trim() || subtask.title)
-      : undefined;
+    const title =
+      input.title !== undefined
+        ? input.title.trim() || subtask.title
+        : undefined;
 
     const updated = await this.subtasksRepository.update(input.subtaskId, {
       ...(title !== undefined ? { title } : {}),
@@ -38,8 +44,11 @@ export class UpdateSubtaskUseCase {
         await this.xpService.awardXP(input.userId, XP_SUBTASK);
       }
 
-      const allSiblings = await this.subtasksRepository.findByTaskId(subtask.taskId);
-      const allDone = allSiblings.length > 0 && allSiblings.every((s) => s.completed);
+      const allSiblings = await this.subtasksRepository.findByTaskId(
+        subtask.taskId,
+      );
+      const allDone =
+        allSiblings.length > 0 && allSiblings.every((s) => s.completed);
       if (allDone !== task.completed) {
         await this.tasksRepository.update(subtask.taskId, {
           completed: allDone,

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, useWindowDimensions, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
+import type { ColorPalette } from '../../../shared/theme';
 import { CompletedTaskSummary, MonthlyDayCell } from '../hooks/useStatsDashboard';
 
 interface MonthlyCalendarCardProps {
@@ -14,24 +15,26 @@ interface MonthlyCalendarCardProps {
 
 const DOW_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-const METRIC = {
-  focus:    { label: 'Focus',    color: colors.secondary, suffix: 'm' },
-  tasks:    { label: 'Tasks',    color: colors.success,   suffix: ''  },
-  subtasks: { label: 'Subtasks', color: '#F5A623',        suffix: ''  },
-} as const;
-
-function heatBg(focus: number, maxFocus: number): string {
-  if (focus === 0) return '#0d1320';
-  const r = focus / maxFocus;
-  if (r < 0.25) return '#1c1040';
-  if (r < 0.50) return '#261558';
-  if (r < 0.75) return '#301b70';
-  return '#3c228c';
+function makeMetric(colors: ColorPalette) {
+  return {
+    focus:    { label: 'Focus',    color: colors.secondary, suffix: 'm' },
+    tasks:    { label: 'Tasks',    color: colors.success,   suffix: ''  },
+    subtasks: { label: 'Subtasks', color: '#F5A623',        suffix: ''  },
+  } as const;
 }
 
-const CELL_NULL  = '#07090f';
-const GRID_COLOR = '#1c2538';
-const CIRCLE_H   = 22;
+function makeHeatBg(primary: string, emptySurface: string) {
+  return (focus: number, maxFocus: number): string => {
+    if (focus === 0) return emptySurface;
+    const r = focus / maxFocus;
+    if (r < 0.25) return `${primary}35`;
+    if (r < 0.50) return `${primary}65`;
+    if (r < 0.75) return `${primary}95`;
+    return primary;
+  };
+}
+
+const CIRCLE_H = 22;
 
 // ─── Day detail modal ────────────────────────────────────────────────────────
 
@@ -46,6 +49,7 @@ interface DayModalProps {
 }
 
 function DayModal({ visible, onClose, day, dow, monthTitle, focus, taskSummaries }: DayModalProps) {
+  const colors = useTheme();
   const hasContent = focus > 0 || taskSummaries.length > 0;
 
   return (
@@ -62,10 +66,10 @@ function DayModal({ visible, onClose, day, dow, monthTitle, focus, taskSummaries
       >
         <Pressable onPress={() => {}} style={{ width: '100%', maxWidth: 360 }}>
           <View style={{
-            backgroundColor: '#111827',
+            backgroundColor: colors.surface,
             borderRadius: 20,
             borderWidth: 1,
-            borderColor: GRID_COLOR,
+            borderColor: colors.border,
             overflow: 'hidden',
           }}>
             {/* Header */}
@@ -76,7 +80,7 @@ function DayModal({ visible, onClose, day, dow, monthTitle, focus, taskSummaries
               paddingHorizontal: spacing.lg,
               paddingVertical: spacing.md,
               borderBottomWidth: 1,
-              borderBottomColor: GRID_COLOR,
+              borderBottomColor: colors.border,
             }}>
               <View>
                 <Text style={{ color: colors.text, fontSize: 17, fontWeight: '900' }}>
@@ -88,7 +92,7 @@ function DayModal({ visible, onClose, day, dow, monthTitle, focus, taskSummaries
               </View>
               <Pressable onPress={onClose} hitSlop={12} style={{
                 width: 28, height: 28, borderRadius: 14,
-                backgroundColor: '#1e293b',
+                backgroundColor: colors.background,
                 alignItems: 'center', justifyContent: 'center',
               }}>
                 <Text style={{ color: colors.textMuted, fontSize: 16, lineHeight: 20 }}>×</Text>
@@ -154,8 +158,20 @@ function DayModal({ visible, onClose, day, dow, monthTitle, focus, taskSummaries
 // ─── Main component ──────────────────────────────────────────────────────────
 
 export function MonthlyCalendarCard({ title, weeks, onPrev, onNext, canGoNext }: MonthlyCalendarCardProps) {
+  const colors = useTheme();
+  const METRIC = makeMetric(colors);
   const { width } = useWindowDimensions();
-  const cellHeight = 110;
+  const isDesktop = width >= 768;
+  // On mobile, fit the whole grid within ~55% of the screen height
+  const cellHeight = isDesktop ? 110 : 44;
+  const circleH = Math.min(CIRCLE_H, Math.round(cellHeight * 0.28));
+
+  const GRID_COLOR = colors.border;
+  const CELL_NULL  = colors.background;
+  const heatBg = useMemo(
+    () => makeHeatBg(colors.primary, colors.surface),
+    [colors.primary, colors.surface],
+  );
 
   const allDays  = weeks.flat().filter((d) => d.day !== null);
   const maxFocus = Math.max(...allDays.map((d) => d.focus), 1);
@@ -213,7 +229,7 @@ export function MonthlyCalendarCard({ title, weeks, onPrev, onNext, canGoNext }:
         paddingVertical: spacing.sm,
         borderTopWidth: 1,
         borderBottomWidth: 1,
-        borderColor: '#ffffff0e',
+        borderColor: colors.border,
       }}>
         {DOW_LABELS.map((d) => (
           <View key={d} style={{ flex: 1, alignItems: 'center' }}>
@@ -236,7 +252,7 @@ export function MonthlyCalendarCard({ title, weeks, onPrev, onNext, canGoNext }:
               const isToday     = !!day.isToday;
               const isSelected  = selected?.cell.day === day.day;
               const hasActivity = day.focus > 0 || day.tasks > 0 || day.subtasks > 0;
-              const cellBg      = isToday && day.focus === 0 ? '#141030' : heatBg(day.focus, maxFocus);
+              const cellBg      = isToday && day.focus === 0 ? `${colors.primary}18` : heatBg(day.focus, maxFocus);
 
               const activePills = [
                 { value: day.focus,    color: METRIC.focus.color,    suffix: 'm' },
@@ -262,7 +278,7 @@ export function MonthlyCalendarCard({ title, weeks, onPrev, onNext, canGoNext }:
                   <Text style={{
                     fontSize: 13,
                     fontWeight: '800',
-                    color: isToday ? colors.primary : hasActivity ? colors.text : '#4a5568',
+                    color: isToday ? colors.primary : hasActivity ? colors.text : colors.textMuted,
                   }}>
                     {day.day}
                   </Text>
@@ -271,14 +287,14 @@ export function MonthlyCalendarCard({ title, weeks, onPrev, onNext, canGoNext }:
                     <View style={{ flexDirection: 'row', gap: 2, alignSelf: 'stretch', paddingHorizontal: 3 }}>
                       {activePills.map(({ value, color, suffix }, idx) => (
                         <View key={idx} style={{
-                          flex: 1, height: CIRCLE_H, borderRadius: CIRCLE_H / 2,
+                          flex: 1, height: circleH, borderRadius: circleH / 2,
                           backgroundColor: color,
                           alignItems: 'center', justifyContent: 'center', overflow: 'hidden',
                         }}>
                           <Text style={{
                             color: colors.background,
                             fontSize: value >= 100 ? 7 : 9,
-                            fontWeight: '900', lineHeight: CIRCLE_H,
+                            fontWeight: '900', lineHeight: circleH,
                           }}>
                             {value}{suffix}
                           </Text>
@@ -286,7 +302,7 @@ export function MonthlyCalendarCard({ title, weeks, onPrev, onNext, canGoNext }:
                       ))}
                     </View>
                   ) : (
-                    <View style={{ height: CIRCLE_H }} />
+                    <View style={{ height: circleH }} />
                   )}
                 </Pressable>
               );

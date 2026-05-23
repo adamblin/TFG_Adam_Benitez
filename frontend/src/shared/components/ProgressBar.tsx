@@ -1,19 +1,20 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { colors } from '../theme';
+import { useTheme } from '../theme';
 
 interface ProgressBarProps extends ViewProps {
   percent: number;
 }
 
 export function ProgressBar({ percent, style }: ProgressBarProps) {
+  const colors = useTheme();
   return (
     <View
       style={[
         {
           height: 8,
           borderRadius: 999,
-          backgroundColor: colors.background,
+          backgroundColor: colors.surface,
           overflow: 'hidden',
         },
         style,

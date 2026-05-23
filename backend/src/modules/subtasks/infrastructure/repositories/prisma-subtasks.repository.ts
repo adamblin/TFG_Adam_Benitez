@@ -18,7 +18,11 @@ export class PrismaSubtasksRepository implements SubtasksRepository {
     return this.prisma.subtask.findUnique({ where: { id: subtaskId } });
   }
 
-  async createForTask(input: { taskId: string; title: string; order?: number }): Promise<SubtaskEntity> {
+  async createForTask(input: {
+    taskId: string;
+    title: string;
+    order?: number;
+  }): Promise<SubtaskEntity> {
     let nextOrder = input.order;
     if (nextOrder === undefined) {
       const last = await this.prisma.subtask.findFirst({
@@ -32,18 +36,25 @@ export class PrismaSubtasksRepository implements SubtasksRepository {
     });
   }
 
-  update(subtaskId: string, input: { title?: string; completed?: boolean; order?: number }): Promise<SubtaskEntity> {
+  update(
+    subtaskId: string,
+    input: { title?: string; completed?: boolean; order?: number },
+  ): Promise<SubtaskEntity> {
     return this.prisma.subtask.update({
       where: { id: subtaskId },
       data: {
         ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(input.completed !== undefined ? { completed: input.completed } : {}),
+        ...(input.completed !== undefined
+          ? { completed: input.completed }
+          : {}),
         ...(input.order !== undefined ? { order: input.order } : {}),
       },
     });
   }
 
   delete(subtaskId: string): Promise<void> {
-    return this.prisma.subtask.delete({ where: { id: subtaskId } }).then(() => {});
+    return this.prisma.subtask
+      .delete({ where: { id: subtaskId } })
+      .then(() => {});
   }
 }

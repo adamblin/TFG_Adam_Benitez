@@ -1,11 +1,12 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 
 type Props = { title: string; subtitle?: string; unlocked?: boolean };
 
 export function AchievementCard({ title, subtitle, unlocked = false }: Props) {
+  const colors = useTheme();
   return (
     <Card
       style={{

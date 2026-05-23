@@ -145,7 +145,7 @@ async function main() {
     writeLine('Starting backend API in background...');
     backendProcess = runDetached(
       process.execPath,
-      [path.join(backendPath, 'dist', 'main.js')],
+      [path.join(backendPath, 'dist', 'src', 'main.js')],
       backendPath,
       path.join(logsDir, 'backend.out.log'),
       path.join(logsDir, 'backend.err.log'),

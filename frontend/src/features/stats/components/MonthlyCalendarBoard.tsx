@@ -1,6 +1,7 @@
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
-import { styles } from './MonthlyCalendarBoard.styles';
+import { makeStyles } from './MonthlyCalendarBoard.styles';
+import { useTheme } from '../../../shared/theme';
 
 interface MonthlyEvent {
   id: string;
@@ -23,6 +24,8 @@ interface MonthlyCalendarBoardProps {
 }
 
 export function MonthlyCalendarBoard({ monthTitle, dayLabels, weeks }: MonthlyCalendarBoardProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   return (
     <View style={styles.wrapper}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>

@@ -2,13 +2,16 @@ import React from 'react';
 import { FlatList, Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
 import { StatsKpi } from '../hooks/useStatsDashboard';
-import { styles } from './StatsKpiGrid.styles';
+import { makeStyles } from './StatsKpiGrid.styles';
+import { useTheme } from '../../../shared/theme';
 
 interface StatsKpiGridProps {
   items: StatsKpi[];
 }
 
 export function StatsKpiGrid({ items }: StatsKpiGridProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   return (
     <FlatList
       data={items}

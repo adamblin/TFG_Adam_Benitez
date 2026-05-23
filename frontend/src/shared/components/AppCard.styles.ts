@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../theme';
+import { type ColorPalette } from '../theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
   base: {
     padding: 20,
     backgroundColor: colors.surface,

@@ -29,7 +29,12 @@ export class PrismaShopRepository implements ShopRepository {
   ): Promise<UserPreferencesEntity> {
     return this.prisma.userPreferences.upsert({
       where: { userId },
-      create: { userId, iconColor: 'icon_blue', theme: 'theme_blue', ...update },
+      create: {
+        userId,
+        iconColor: 'icon_blue',
+        theme: 'theme_blue',
+        ...update,
+      },
       update,
     });
   }

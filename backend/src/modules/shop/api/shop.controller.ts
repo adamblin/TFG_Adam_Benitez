@@ -1,6 +1,20 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { Request } from 'express';
-import { ApiBearerAuth, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/api/guards/jwt-auth.guard';
 import { ShopService } from '../application/shop.service';
 import {
@@ -34,16 +48,24 @@ export class ShopController {
   }
 
   @Post('purchase')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Purchase a shop item' })
   @ApiOkResponse({ type: PurchaseResponseDto })
-  purchase(@Req() req: AuthRequest, @Body() body: ItemActionDto): Promise<PurchaseResponseDto> {
+  purchase(
+    @Req() req: AuthRequest,
+    @Body() body: ItemActionDto,
+  ): Promise<PurchaseResponseDto> {
     return this.shopService.purchase(req.user.sub, body.itemId);
   }
 
   @Post('equip')
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Equip an owned item' })
   @ApiOkResponse({ type: PreferencesResponseDto })
-  equip(@Req() req: AuthRequest, @Body() body: ItemActionDto): Promise<PreferencesResponseDto> {
+  equip(
+    @Req() req: AuthRequest,
+    @Body() body: ItemActionDto,
+  ): Promise<PreferencesResponseDto> {
     return this.shopService.equip(req.user.sub, body.itemId);
   }
 }

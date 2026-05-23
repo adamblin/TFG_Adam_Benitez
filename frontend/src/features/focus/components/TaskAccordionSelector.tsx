@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
-import { computeRisk, RISK_CONFIG } from '../../../shared/utils/taskRisk';
-import { styles } from './TaskAccordionSelector.styles';
+import { useTheme, spacing } from '../../../shared/theme';
+import { makeStyles } from './TaskAccordionSelector.styles';
 
 export type TaskWithSubtasks = {
   id: string;
@@ -28,6 +27,8 @@ export function TaskAccordionSelector({
   onSelectTask,
   onSelectSubtask,
 }: Props) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   const [expandedTaskId, setExpandedTaskId] = useState<string | null>(selectedTaskId);
 
   const handleSelectTask = (taskId: string) => {
@@ -40,8 +41,6 @@ export function TaskAccordionSelector({
       {tasks.map((task) => {
         const isExpanded  = expandedTaskId === task.id;
         const isSelected  = selectedTaskId === task.id;
-        const risk        = computeRisk(task);
-        const { label: riskLabel, color: riskColor } = RISK_CONFIG[risk];
 
         return (
           <View key={task.id} style={{ marginBottom: spacing.sm }}>
@@ -55,8 +54,8 @@ export function TaskAccordionSelector({
                 style={[
                   styles.taskCard,
                   {
-                    borderLeftColor: riskColor,
-                    backgroundColor: isSelected ? `${riskColor}22` : colors.surface,
+                    borderLeftColor: colors.task,
+                    backgroundColor: isSelected ? `${colors.task}22` : colors.surface,
                   },
                 ]}
               >
@@ -65,23 +64,11 @@ export function TaskAccordionSelector({
                     <Text style={[styles.taskTitle, { color: colors.text }]}>
                       {task.title}
                     </Text>
-                    <View style={styles.taskMeta}>
-                      {/* Risk chip — same style as TaskAccordionCard */}
-                      <View style={[
-                        styles.priorityChip,
-                        { backgroundColor: `${riskColor}1A`, borderColor: riskColor, borderWidth: 1 },
-                      ]}>
-                        <View style={[styles.priorityDot, { backgroundColor: riskColor }]} />
-                        <Text style={[styles.priorityText, { color: riskColor }]}>
-                          {riskLabel}
-                        </Text>
-                      </View>
-                    </View>
                   </View>
                   <Text style={[
                     styles.expandIcon,
                     {
-                      color: isSelected ? riskColor : colors.textMuted,
+                      color: isSelected ? colors.task : colors.textMuted,
                       transform: [{ rotate: isExpanded ? '180deg' : '0deg' }],
                     },
                   ]}>
@@ -105,10 +92,10 @@ export function TaskAccordionSelector({
                         styles.subtaskCard,
                         {
                           backgroundColor: isSubtaskSelected
-                            ? `${riskColor}22`
+                            ? `${colors.subtask}22`
                             : colors.background,
                           borderLeftWidth: isSubtaskSelected ? 2 : 0,
-                          borderLeftColor: riskColor,
+                          borderLeftColor: colors.subtask,
                         },
                       ]}>
                         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -122,7 +109,7 @@ export function TaskAccordionSelector({
                             {subtask.title}
                           </Text>
                           {isSubtaskSelected && (
-                            <Text style={[styles.subtaskCheckmark, { color: riskColor }]}>✓</Text>
+                            <Text style={[styles.subtaskCheckmark, { color: colors.subtask }]}>✓</Text>
                           )}
                         </View>
                       </Card>

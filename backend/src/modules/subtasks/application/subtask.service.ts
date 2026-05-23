@@ -35,7 +35,11 @@ export class SubtaskService {
     return this.getSubtaskByIdUseCase.execute(userId, subtaskId);
   }
 
-  updateSubtask(userId: string, subtaskId: string, dto: UpdateSubtaskDto): Promise<SubtaskEntity> {
+  updateSubtask(
+    userId: string,
+    subtaskId: string,
+    dto: UpdateSubtaskDto,
+  ): Promise<SubtaskEntity> {
     return this.updateSubtaskUseCase.execute({
       userId,
       subtaskId,

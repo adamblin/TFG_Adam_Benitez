@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, Text, FlatList } from 'react-native';
-import { colors, spacing } from '../theme';
+import { useTheme, spacing } from '../theme';
 import { Card } from './Card';
 
 interface TaskItem {
@@ -23,6 +23,7 @@ export function TaskSelector({
   isOpen,
   onToggle,
 }: TaskSelectorProps) {
+  const colors = useTheme();
   const selectedTask = tasks.find((t) => t.id === selectedTaskId);
 
   return (

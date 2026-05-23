@@ -52,25 +52,22 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
 
   console.log('[apiRequest] requesting', url, init?.method ?? 'GET');
 
+  let response: Response;
   try {
-    const response = await fetch(url, {
-      ...init,
-      headers,
-    });
-
-    const text = await response.text();
-    const data = text ? JSON.parse(text) : null;
-
-    if (!response.ok) {
-      const message = data?.message ?? data?.error ?? 'Request failed';
-      throw new Error(Array.isArray(message) ? message.join(', ') : message);
-    }
-
-    return data as T;
+    response = await fetch(url, { ...init, headers });
   } catch (err: any) {
-    const userMessage = err?.message ?? String(err);
-    throw new Error(`[apiRequest] fetch failed for ${url}: ${userMessage}`);
+    throw new Error(`[network] Cannot reach ${BASE_URL}: ${err?.message ?? String(err)}`);
   }
+
+  const text = await response.text();
+  const data = text ? JSON.parse(text) : null;
+
+  if (!response.ok) {
+    const message = data?.message ?? data?.error ?? 'Request failed';
+    throw new Error(Array.isArray(message) ? message.join(', ') : message);
+  }
+
+  return data as T;
 }
 
 export function getApiBaseUrl() {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { colors, spacing } from '../theme';
+import { useTheme, spacing } from '../theme';
 import { Card } from './Card';
 
 interface DecomposeFormProps {
@@ -16,6 +16,7 @@ export function DecomposeForm({
   onSubmit,
   isLoading = false,
 }: DecomposeFormProps) {
+  const colors = useTheme();
   return (
     <Card>
       <Text style={{ color: colors.text, fontSize: 14, fontWeight: '700', marginBottom: spacing.xs }}>

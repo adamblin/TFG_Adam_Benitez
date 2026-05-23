@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { SubtasksRepository } from '../../domain/repositories/subtasks.repository';
 import { TasksRepository } from 'src/modules/tasks/domain/repositories/tasks.repository';
 
@@ -14,7 +18,8 @@ export class DeleteSubtaskUseCase {
     if (!subtask) throw new NotFoundException('Subtask not found');
 
     const task = await this.tasksRepository.findById(subtask.taskId);
-    if (!task || task.userId !== userId) throw new ForbiddenException('Access denied');
+    if (!task || task.userId !== userId)
+      throw new ForbiddenException('Access denied');
 
     await this.subtasksRepository.delete(subtaskId);
   }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 import type { MomentumData } from '../hooks/useStatsDashboard';
 
 function fmtMin(m: number): string {
@@ -13,6 +13,7 @@ function fmtMin(m: number): string {
 }
 
 function DeltaBadge({ delta }: { delta: number | null }) {
+  const colors = useTheme();
   if (delta === null) {
     return <Text style={{ color: colors.textMuted, fontSize: 12 }}>No prev data</Text>;
   }
@@ -38,6 +39,7 @@ interface MomentumCardProps {
 }
 
 export function MomentumCard({ data }: MomentumCardProps) {
+  const colors = useTheme();
   const { thisMonthFocus, lastMonthFocus, focusDelta, thisMonthTasks, lastMonthTasks, tasksDelta } = data;
 
   const rows = [

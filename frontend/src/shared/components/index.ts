@@ -18,3 +18,4 @@ export { TaskSelector } from './TaskSelector';
 export { DurationSelector } from './DurationSelector';
 export { DatePicker } from './DatePicker';
 export { StreakCelebrationOverlay } from './StreakCelebrationOverlay';
+export { MotivationalPhraseModal } from './MotivationalPhraseModal';

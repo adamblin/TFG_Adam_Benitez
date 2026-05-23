@@ -13,7 +13,11 @@ export class PrismaStreaksRepository implements StreaksRepository {
 
   upsert(
     userId: string,
-    input: { currentStreak: number; longestStreak: number; lastActiveDate: Date },
+    input: {
+      currentStreak: number;
+      longestStreak: number;
+      lastActiveDate: Date;
+    },
   ): Promise<StreakEntity> {
     return this.prisma.streak.upsert({
       where: { userId },

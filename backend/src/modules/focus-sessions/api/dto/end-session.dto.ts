@@ -6,7 +6,10 @@ export class EndSessionDto {
   @IsString()
   sessionId!: string;
 
-  @ApiProperty({ example: true, description: 'Whether the user completed the full session' })
+  @ApiProperty({
+    example: true,
+    description: 'Whether the user completed the full session',
+  })
   @IsBoolean()
   completed!: boolean;
 }

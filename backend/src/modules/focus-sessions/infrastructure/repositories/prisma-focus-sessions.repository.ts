@@ -63,7 +63,9 @@ export class PrismaFocusSessionsRepository implements FocusSessionsRepository {
       where: { id: sessionId },
       data: {
         ...(input.endedAt !== undefined ? { endedAt: input.endedAt } : {}),
-        ...(input.completed !== undefined ? { completed: input.completed } : {}),
+        ...(input.completed !== undefined
+          ? { completed: input.completed }
+          : {}),
       },
     });
   }

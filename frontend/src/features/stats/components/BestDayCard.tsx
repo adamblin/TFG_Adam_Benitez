@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 import type { BestDayData } from '../hooks/useStatsDashboard';
 
 function fmtMin(minutes: number): string {
@@ -17,6 +17,7 @@ interface BestDayCardProps {
 }
 
 export function BestDayCard({ data }: BestDayCardProps) {
+  const colors = useTheme();
   const { labels, data: values, bestIdx } = data;
   const max = Math.max(...values, 1);
   const hasAnyData = values.some((v) => v > 0);
@@ -58,12 +59,12 @@ export function BestDayCard({ data }: BestDayCardProps) {
               }}>
                 {label}
               </Text>
-              <View style={{ flex: 1, height: 7, borderRadius: 4, backgroundColor: '#151e30', overflow: 'hidden' }}>
+              <View style={{ flex: 1, height: 7, borderRadius: 4, backgroundColor: colors.border, overflow: 'hidden' }}>
                 <View style={{
                   width: `${pct}%`,
                   height: '100%',
                   borderRadius: 4,
-                  backgroundColor: isBest ? colors.primary : '#2a3a58',
+                  backgroundColor: isBest ? colors.primary : `${colors.primary}40`,
                 }} />
               </View>
               <Text style={{

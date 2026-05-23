@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, View, Text, ActivityIndicator } from 'react-native';
-import { colors, spacing } from '../theme';
+import { useTheme, spacing } from '../theme';
 import { Card } from './Card';
 
 interface TaskCardItem {
@@ -17,6 +17,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, onToggle, isUpdating = false }: TaskCardProps) {
+  const colors = useTheme();
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (

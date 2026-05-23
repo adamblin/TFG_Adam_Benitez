@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { StartSessionUseCase } from './use-cases/start-session.use-case';
-import { EndSessionUseCase, EndSessionResult } from './use-cases/end-session.use-case';
+import {
+  EndSessionUseCase,
+  EndSessionResult,
+} from './use-cases/end-session.use-case';
 import { ListSessionsUseCase } from './use-cases/list-sessions.use-case';
 import { FocusSessionEntity } from '../domain/entities/focus-session.entity';
 

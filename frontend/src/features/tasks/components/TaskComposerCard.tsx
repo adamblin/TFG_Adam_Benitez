@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Button, Card, DatePicker } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
-import { styles } from './TaskComposerCard.styles';
+import { useTheme, spacing } from '../../../shared/theme';
+import { makeStyles } from './TaskComposerCard.styles';
 
 type Mode = 'auto' | 'manual';
 type SubtaskDraft = { key: string; title: string };
@@ -19,18 +20,23 @@ function formatSelected(iso: string): string {
 }
 
 type Props = {
-  onAutoSubmit: (title: string, dueDate: string | null) => void | Promise<void>;
+  onBreakdown: (description: string) => Promise<{ title: string; subtasks: string[] } | null>;
+  onAutoSubmit: (title: string, subtasks: string[], dueDate: string | null) => void | Promise<void>;
   onManualSubmit: (title: string, subtasks: string[], dueDate: string | null) => void | Promise<void>;
   isLoading?: boolean;
 };
 
-export function TaskComposerCard({ onAutoSubmit, onManualSubmit, isLoading = false }: Props) {
-  const [mode, setMode]             = useState<Mode>('auto');
-  const [autoTitle, setAutoTitle]   = useState('');
-  const [manualTitle, setManualTitle] = useState('');
-  const [subtaskDrafts, setSubtaskDrafts] = useState<SubtaskDraft[]>([]);
-  const [dueDate, setDueDate]       = useState<string | null>(null);
-  const [calOpen, setCalOpen]       = useState(false);
+export function TaskComposerCard({ onBreakdown, onAutoSubmit, onManualSubmit, isLoading = false }: Props) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
+
+  const [mode, setMode]                     = useState<Mode>('auto');
+  const [isBreakingDown, setIsBreakingDown] = useState(false);
+  const [autoTitle, setAutoTitle]           = useState('');
+  const [manualTitle, setManualTitle]       = useState('');
+  const [subtaskDrafts, setSubtaskDrafts]   = useState<SubtaskDraft[]>([]);
+  const [dueDate, setDueDate]               = useState<string | null>(null);
+  const [calOpen, setCalOpen]               = useState(false);
   const counter = useRef(0);
 
   const addSubtask = () => {
@@ -45,14 +51,22 @@ export function TaskComposerCard({ onAutoSubmit, onManualSubmit, isLoading = fal
   const resetForm = () => {
     setDueDate(null);
     setCalOpen(false);
+    setSubtaskDrafts([]);
   };
 
-  const handleAutoSubmit = () => {
+  const handleBreakdown = async () => {
     const t = autoTitle.trim();
     if (!t) return;
-    onAutoSubmit(t, dueDate);
-    setAutoTitle('');
-    resetForm();
+    setIsBreakingDown(true);
+    try {
+      const result = await onBreakdown(t);
+      if (!result) return;
+      await onAutoSubmit(result.title, result.subtasks, dueDate);
+      setAutoTitle('');
+      resetForm();
+    } finally {
+      setIsBreakingDown(false);
+    }
   };
 
   const handleManualSubmit = () => {
@@ -61,16 +75,14 @@ export function TaskComposerCard({ onAutoSubmit, onManualSubmit, isLoading = fal
     const validSubtasks = subtaskDrafts.map((s) => s.title.trim()).filter(Boolean);
     onManualSubmit(t, validSubtasks, dueDate);
     setManualTitle('');
-    setSubtaskDrafts([]);
     resetForm();
   };
 
   const dueDateRow = (
     <View style={{ marginBottom: spacing.sm }}>
-      {/* Toggle button */}
       <Pressable
         onPress={() => setCalOpen((v) => !v)}
-        disabled={isLoading}
+        disabled={isLoading || isBreakingDown}
         style={{
           flexDirection: 'row',
           alignItems: 'center',
@@ -102,16 +114,15 @@ export function TaskComposerCard({ onAutoSubmit, onManualSubmit, isLoading = fal
         )}
       </Pressable>
 
-      {/* Compact calendar box */}
       {calOpen && (
         <View style={{
           marginTop: spacing.xs,
           width: 280,
           borderRadius: 10,
           borderWidth: 1,
-          borderColor: '#1c2538',
+          borderColor: colors.border,
           overflow: 'hidden',
-          backgroundColor: '#0d1320',
+          backgroundColor: colors.surface,
         }}>
           <DatePicker
             value={dueDate}
@@ -143,23 +154,33 @@ export function TaskComposerCard({ onAutoSubmit, onManualSubmit, isLoading = fal
       {mode === 'auto' ? (
         <>
           <TextInput
-            style={styles.input}
+            style={[styles.input, styles.titleInput]}
             placeholder="Describe the task you want to break down..."
             placeholderTextColor={colors.textMuted}
             value={autoTitle}
             onChangeText={setAutoTitle}
-            editable={!isLoading}
+            editable={!isLoading && !isBreakingDown}
             multiline
             textAlignVertical="top"
           />
           {dueDateRow}
-          <Text style={styles.helperText}>AI will break it into subtasks automatically</Text>
-          <Button
-            label="Break down"
-            onPress={handleAutoSubmit}
-            disabled={isLoading || !autoTitle.trim()}
-            style={styles.button}
-          />
+
+          {isBreakingDown ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm, paddingVertical: spacing.xs }}>
+              <ActivityIndicator size="small" color={colors.primary} />
+              <Text style={{ color: colors.textMuted, fontSize: 13 }}>AI is generating subtasks...</Text>
+            </View>
+          ) : (
+            <>
+              <Text style={styles.helperText}>AI will break it into subtasks automatically</Text>
+              <Button
+                label="Break down"
+                onPress={handleBreakdown}
+                disabled={isLoading || !autoTitle.trim()}
+                style={styles.button}
+              />
+            </>
+          )}
         </>
       ) : (
         <>
@@ -186,12 +207,15 @@ export function TaskComposerCard({ onAutoSubmit, onManualSubmit, isLoading = fal
                   editable={!isLoading}
                 />
                 <Pressable onPress={() => removeSubtask(s.key)} hitSlop={8} style={styles.removeBtn}>
-                  <Text style={styles.removeBtnText}>×</Text>
+                  <Ionicons name="close" size={14} color={colors.error} />
                 </Pressable>
               </View>
             ))}
             <Pressable style={styles.addSubtaskRow} onPress={addSubtask} disabled={isLoading}>
-              <Text style={styles.addSubtaskText}>+ Add subtask</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
+                <Ionicons name="add-circle-outline" size={16} color={colors.primary} />
+                <Text style={styles.addSubtaskText}>Add subtask</Text>
+              </View>
             </Pressable>
           </View>
           <Button

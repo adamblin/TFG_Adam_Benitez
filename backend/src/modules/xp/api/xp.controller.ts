@@ -4,20 +4,11 @@ import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
-  ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/api/guards/jwt-auth.guard';
 import { XPService } from '../application/xp.service';
-
-export class LevelInfoDto {
-  @ApiProperty() totalXp!: number;
-  @ApiProperty() level!: number;
-  @ApiProperty() xpInLevel!: number;
-  @ApiProperty() xpToNextLevel!: number;
-  @ApiProperty() progressPercent!: number;
-  @ApiProperty() coins!: number;
-}
+import { LevelInfoDto } from './dto/level-info.dto';
 
 type AuthRequest = Request & { user: { sub: string } };
 

@@ -1,5 +1,6 @@
 import { Text } from 'react-native';
-import { styles } from './LoginForm.styles';
+import { makeStyles } from './LoginForm.styles';
+import { useTheme } from '../../../shared/theme';
 import { AppButton, AppField, FormShell } from '../../../shared/components';
 import { useLoginForm } from '../hooks/useLoginForm';
 import { FormModeSwitcher } from './FormModeSwitcher';
@@ -20,6 +21,8 @@ const DEV_PLACEHOLDERS = __DEV__
     };
 
 export function LoginForm() {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   const {
     mode,
     setMode,

@@ -1,7 +1,9 @@
 import React from 'react';
 import { Text, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 
 const LEVEL_TITLES: [number, string][] = [
   [20, 'Legend'],
@@ -29,25 +31,35 @@ type Props = {
 };
 
 export function ProfileLevelCard({ level, xpInLevel, xpToNextLevel, progressPercent, totalXp, coins }: Props) {
+  const colors = useTheme();
   const title = getLevelTitle(level);
 
   return (
     <Card style={{ marginBottom: spacing.sm }}>
       {/* Header row: level badge + title + total XP */}
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg }}>
-        <View style={{
-          width: 64,
-          height: 64,
-          borderRadius: 32,
-          backgroundColor: colors.primary,
-          alignItems: 'center',
-          justifyContent: 'center',
-          marginRight: spacing.md,
-        }}>
+        <LinearGradient
+          colors={[colors.primary, colors.secondary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            width: 64,
+            height: 64,
+            borderRadius: 32,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: spacing.md,
+            shadowColor: colors.primary,
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.7,
+            shadowRadius: 14,
+            elevation: 10,
+          }}
+        >
           <Text style={{ color: '#fff', fontSize: 26, fontWeight: '900', lineHeight: 30 }}>
             {level}
           </Text>
-        </View>
+        </LinearGradient>
 
         <View style={{ flex: 1 }}>
           <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: '700', letterSpacing: 0.8, marginBottom: 2 }}>
@@ -57,13 +69,13 @@ export function ProfileLevelCard({ level, xpInLevel, xpToNextLevel, progressPerc
             {title}
           </Text>
           <Text style={{ color: colors.textMuted, fontSize: 12, marginTop: 2 }}>
-            {totalXp} XP total
+            {totalXp.toLocaleString()} XP total
           </Text>
         </View>
       </View>
 
       {/* Progress bar */}
-      <View style={{ marginBottom: spacing.sm }}>
+      <View style={{ marginBottom: spacing.md }}>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.xs }}>
           <Text style={{ color: colors.textMuted, fontSize: 11, fontWeight: '700', letterSpacing: 0.6 }}>
             PROGRESS TO LEVEL {level + 1}
@@ -80,12 +92,12 @@ export function ProfileLevelCard({ level, xpInLevel, xpToNextLevel, progressPerc
           borderRadius: 4,
           overflow: 'hidden',
         }}>
-          <View style={{
-            height: '100%',
-            width: `${progressPercent}%`,
-            backgroundColor: colors.primary,
-            borderRadius: 4,
-          }} />
+          <LinearGradient
+            colors={[colors.primary, colors.secondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ height: '100%', width: `${Math.max(2, progressPercent)}%`, borderRadius: 4 }}
+          />
         </View>
       </View>
 
@@ -99,13 +111,24 @@ export function ProfileLevelCard({ level, xpInLevel, xpToNextLevel, progressPerc
         borderTopColor: colors.border,
       }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
-          <Text style={{ fontSize: 20 }}>🪙</Text>
+          <View style={{
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            backgroundColor: `${colors.warning}20`,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: `${colors.warning}40`,
+          }}>
+            <Ionicons name="logo-bitcoin" size={18} color={colors.warning} />
+          </View>
           <View>
             <Text style={{ color: colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.6 }}>
               COINS
             </Text>
             <Text style={{ color: colors.text, fontSize: 18, fontWeight: '900', lineHeight: 22 }}>
-              {coins}
+              {coins.toLocaleString()}
             </Text>
           </View>
         </View>

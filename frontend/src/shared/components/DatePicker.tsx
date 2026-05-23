@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { colors, spacing } from '../theme';
+import { useTheme, spacing } from '../theme';
 
-// Same visual constants as MonthlyCalendarCard
-const GRID_COLOR = '#1c2538';
-const CELL_NULL  = '#07090f';
-const CELL_EMPTY = '#0d1320';
 const DOW_LABELS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
 const CELL_H     = 36;
 
@@ -13,9 +9,8 @@ function daysInMonth(year: number, month: number): number {
   return new Date(year, month + 1, 0).getDate();
 }
 
-// Mon-based offset (0=Mon … 6=Sun) for the 1st of the month
 function firstDayOffset(year: number, month: number): number {
-  const d = new Date(year, month, 1).getDay(); // 0=Sun
+  const d = new Date(year, month, 1).getDay();
   return d === 0 ? 6 : d - 1;
 }
 
@@ -28,7 +23,6 @@ function todayISO(): string {
   return toISO(t.getFullYear(), t.getMonth(), t.getDate());
 }
 
-// Normalize any ISO string (full datetime or date-only) to YYYY-MM-DD
 function toDateOnly(v: string): string {
   return v.slice(0, 10);
 }
@@ -39,9 +33,10 @@ interface Props {
   accentColor?: string;
 }
 
-export function DatePicker({ value, onChange, accentColor = colors.primary }: Props) {
-  const today = new Date();
-  // Normalize: backend may return full ISO datetime ("2026-05-14T00:00:00.000Z")
+export function DatePicker({ value, onChange, accentColor }: Props) {
+  const colors = useTheme();
+  const accent = accentColor ?? colors.primary;
+  const today  = new Date();
   const dateOnly = value ? toDateOnly(value) : null;
   const initDate = dateOnly ? new Date(`${dateOnly}T00:00:00`) : today;
 
@@ -60,11 +55,10 @@ export function DatePicker({ value, onChange, accentColor = colors.primary }: Pr
   const monthLabel = new Date(year, month, 1)
     .toLocaleDateString('en', { month: 'long', year: 'numeric' });
 
-  const offset  = firstDayOffset(year, month);
-  const numDays = daysInMonth(year, month);
-  const now     = todayISO();
+  const offset   = firstDayOffset(year, month);
+  const numDays  = daysInMonth(year, month);
+  const now      = todayISO();
 
-  // Build rows of 7 — null for padding cells, number for real days
   const cells: (number | null)[] = [
     ...Array<null>(offset).fill(null),
     ...Array.from({ length: numDays }, (_, i) => i + 1),
@@ -73,61 +67,57 @@ export function DatePicker({ value, onChange, accentColor = colors.primary }: Pr
   while (cells.length < totalCells) cells.push(null);
   const rows: (number | null)[][] = Array.from(
     { length: totalCells / 7 },
-    (_, r) => cells.slice(r * 7, r * 7 + 7)
+    (_, r) => cells.slice(r * 7, r * 7 + 7),
   );
 
   return (
     <View style={{ overflow: 'hidden' }}>
-      {/* Navigation header — same style as MonthlyCalendarCard */}
+      {/* Navigation header */}
       <View style={{
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: spacing.sm,
         paddingVertical: spacing.sm,
+        backgroundColor: colors.surface,
       }}>
         <Pressable onPress={prevMonth} hitSlop={12} style={{ padding: 4 }}>
-          <Text style={{ color: colors.primary, fontSize: 22, fontWeight: '700', lineHeight: 26 }}>‹</Text>
+          <Text style={{ color: accent, fontSize: 22, fontWeight: '700', lineHeight: 26 }}>‹</Text>
         </Pressable>
         <Text style={{ color: colors.text, fontSize: 14, fontWeight: '900' }}>{monthLabel}</Text>
         <Pressable onPress={nextMonth} hitSlop={12} style={{ padding: 4 }}>
-          <Text style={{ color: colors.primary, fontSize: 22, fontWeight: '700', lineHeight: 26 }}>›</Text>
+          <Text style={{ color: accent, fontSize: 22, fontWeight: '700', lineHeight: 26 }}>›</Text>
         </Pressable>
       </View>
 
-      {/* Day-of-week header — same style as MonthlyCalendarCard */}
+      {/* Day-of-week header */}
       <View style={{
         flexDirection: 'row',
-        backgroundColor: GRID_COLOR,
+        backgroundColor: colors.border,
         paddingVertical: 6,
         borderTopWidth: 1,
         borderBottomWidth: 1,
-        borderColor: '#ffffff0e',
+        borderColor: colors.border,
       }}>
         {DOW_LABELS.map((d) => (
           <View key={d} style={{ flex: 1, alignItems: 'center' }}>
-            <Text style={{
-              color: colors.textMuted,
-              fontSize: 10,
-              fontWeight: '700',
-              letterSpacing: 0.5,
-            }}>
+            <Text style={{ color: colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.5 }}>
               {d.toUpperCase()}
             </Text>
           </View>
         ))}
       </View>
 
-      {/* Grid — same gap-as-grid-lines pattern */}
-      <View style={{ backgroundColor: GRID_COLOR, gap: 1, paddingBottom: 1 }}>
+      {/* Calendar grid */}
+      <View style={{ backgroundColor: colors.border, gap: 1, paddingBottom: 1 }}>
         {rows.map((row, ri) => (
-          <View key={ri} style={{ flexDirection: 'row', backgroundColor: GRID_COLOR, gap: 1 }}>
+          <View key={ri} style={{ flexDirection: 'row', backgroundColor: colors.border, gap: 1 }}>
             {row.map((day, di) => {
               if (day === null) {
                 return (
                   <View
                     key={`n${di}`}
-                    style={{ flex: 1, height: CELL_H, backgroundColor: CELL_NULL }}
+                    style={{ flex: 1, height: CELL_H, backgroundColor: colors.background }}
                   />
                 );
               }
@@ -144,9 +134,9 @@ export function DatePicker({ value, onChange, accentColor = colors.primary }: Pr
                   style={{
                     flex: 1,
                     height: CELL_H,
-                    backgroundColor: isSelected ? accentColor : CELL_EMPTY,
+                    backgroundColor: isSelected ? accent : colors.surface,
                     borderTopWidth: isToday && !isSelected ? 2.5 : 0,
-                    borderTopColor: colors.primary,
+                    borderTopColor: accent,
                     alignItems: 'center',
                     justifyContent: 'center',
                   }}
@@ -157,10 +147,11 @@ export function DatePicker({ value, onChange, accentColor = colors.primary }: Pr
                     color: isSelected
                       ? '#fff'
                       : isToday
-                      ? colors.primary
+                      ? accent
                       : isPast
-                      ? '#3a4a60'
+                      ? colors.textMuted
                       : colors.text,
+                    opacity: isPast && !isToday ? 0.45 : 1,
                   }}>
                     {day}
                   </Text>

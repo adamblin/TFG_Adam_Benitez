@@ -1,12 +1,14 @@
-import { colors } from '../theme';
+import type { ColorPalette } from '../theme';
 
 export type RiskLevel = 'high' | 'medium' | 'low';
 
-export const RISK_CONFIG: Record<RiskLevel, { label: string; color: string }> = {
-  high:   { label: 'High risk',   color: colors.error },
-  medium: { label: 'Medium risk', color: '#F5A623' },
-  low:    { label: 'Low risk',    color: colors.success },
-};
+export function makeRiskConfig(colors: ColorPalette): Record<RiskLevel, { label: string; color: string }> {
+  return {
+    high:   { label: 'High risk',   color: colors.error },
+    medium: { label: 'Medium risk', color: '#FBBF24' },
+    low:    { label: 'Low risk',    color: colors.riskLow },
+  };
+}
 
 export const RISK_ORDER: Record<RiskLevel, number> = { high: 0, medium: 1, low: 2 };
 

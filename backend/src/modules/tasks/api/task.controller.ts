@@ -26,6 +26,10 @@ import { TasksService } from '../application/tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskResponseDto } from './dto/task-response.dto';
+import {
+  BreakdownTaskDto,
+  BreakdownResponseDto,
+} from './dto/breakdown-task.dto';
 import { TaskResponseMapper } from './mappers/task-response.mapper';
 
 type AuthenticatedRequest = Request & { user: { sub: string } };
@@ -40,9 +44,25 @@ export class TaskController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'List tasks for the current user' })
   @ApiOkResponse({ type: TaskResponseDto, isArray: true })
-  async listMyTasks(@Req() req: AuthenticatedRequest): Promise<TaskResponseDto[]> {
+  async listMyTasks(
+    @Req() req: AuthenticatedRequest,
+  ): Promise<TaskResponseDto[]> {
     const tasks = await this.tasksService.listMyTasks(req.user.sub);
     return tasks.map((task) => TaskResponseMapper.toDto(task));
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('breakdown')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Break a task down into subtasks using AI' })
+  @ApiOkResponse({ type: BreakdownResponseDto })
+  async breakdownTask(
+    @Body() dto: BreakdownTaskDto,
+  ): Promise<BreakdownResponseDto> {
+    const { title, subtasks } = await this.tasksService.breakdownTask(
+      dto.title,
+    );
+    return { title, subtasks };
   }
 
   @UseGuards(JwtAuthGuard)

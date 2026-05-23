@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { PageShell, SectionLabel } from '../../src/shared/components';
-import { colors, spacing } from '../../src/shared/theme';
+import { useTheme, spacing } from '../../src/shared/theme';
 import { StreakHeaderCard } from '../../src/features/streaks/components/StreakHeaderCard';
 import { WeekProgressRow } from '../../src/features/streaks/components/WeekProgressRow';
 import { AchievementCard } from '../../src/features/streaks/components/AchievementCard';
@@ -13,16 +14,15 @@ import type { FocusSession } from '../../src/services/focus.service';
 function isSameDay(a: Date, b: Date): boolean {
   return (
     a.getFullYear() === b.getFullYear() &&
-    a.getMonth() === b.getMonth() &&
-    a.getDate() === b.getDate()
+    a.getMonth()    === b.getMonth()    &&
+    a.getDate()     === b.getDate()
   );
 }
 
 function buildWeekArray(sessions: FocusSession[]): boolean[] {
-  const now = new Date();
+  const now       = new Date();
   const dayOfWeek = now.getDay();
-  const monFirst = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-
+  const monFirst  = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
   return Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now);
     d.setDate(now.getDate() - (monFirst - i));
@@ -32,40 +32,60 @@ function buildWeekArray(sessions: FocusSession[]): boolean[] {
 }
 
 export default function StreaksScreen() {
+  const colors = useTheme();
   const [viewMode, setViewMode] = useState<'weekly' | 'monthly'>('weekly');
-  const { data: streak } = useStreak();
+  const { data: streak }        = useStreak();
   const { data: sessions = [] } = useFocusSessions();
 
-  const streakDays = streak?.currentStreak ?? 0;
-  const longestStreak = streak?.longestStreak ?? 0;
-
-  const week = useMemo(() => buildWeekArray(sessions), [sessions]);
+  const streakDays    = streak?.currentStreak  ?? 0;
+  const longestStreak = streak?.longestStreak  ?? 0;
+  const week          = useMemo(() => buildWeekArray(sessions), [sessions]);
 
   const achievements = useMemo(
     () => [
-      { id: 'a1', title: '3 days', subtitle: 'First streak', unlocked: longestStreak >= 3 },
-      { id: 'a2', title: '1 week', subtitle: 'A full week', unlocked: longestStreak >= 7 },
-      { id: 'a3', title: '2 weeks', subtitle: 'Consistency', unlocked: longestStreak >= 14 },
-      { id: 'a4', title: '1 month', subtitle: 'Habit formed', unlocked: longestStreak >= 30 },
+      { id: 'a1', title: '3 days',   subtitle: 'First streak',  unlocked: longestStreak >= 3  },
+      { id: 'a2', title: '1 week',   subtitle: 'A full week',   unlocked: longestStreak >= 7  },
+      { id: 'a3', title: '2 weeks',  subtitle: 'Consistency',   unlocked: longestStreak >= 14 },
+      { id: 'a4', title: '1 month',  subtitle: 'Habit formed',  unlocked: longestStreak >= 30 },
     ],
-    [longestStreak]
+    [longestStreak],
   );
 
   return (
     <PageShell>
-      <Text style={{ color: colors.text, fontSize: 34, fontWeight: '900', marginBottom: spacing.xs }}>Streaks</Text>
-      <Text style={{ color: colors.textMuted, fontSize: 15, marginBottom: spacing.lg }}>
-        Keep the momentum going every day
-      </Text>
+      {/* Header */}
+      <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: spacing.lg }}>
+        <View>
+          <Text style={{ color: colors.textMuted, fontSize: 13, fontWeight: '600', marginBottom: 2 }}>
+            Build habits daily
+          </Text>
+          <Text style={{ color: colors.text, fontSize: 28, fontWeight: '900', lineHeight: 32 }}>
+            Streaks
+          </Text>
+        </View>
+        <View style={{
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: `${colors.warning}20`,
+          borderWidth: 1,
+          borderColor: `${colors.warning}40`,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <Ionicons name="flame" size={20} color={colors.warning} />
+        </View>
+      </View>
 
       <StreakHeaderCard days={streakDays} />
 
+      {/* Weekly / Monthly toggle */}
       <View style={{
         flexDirection: 'row',
         backgroundColor: colors.surface,
         borderWidth: 1,
         borderColor: colors.border,
-        borderRadius: 10,
+        borderRadius: 14,
         padding: 4,
         gap: 4,
         marginBottom: spacing.md,
@@ -77,13 +97,13 @@ export default function StreaksScreen() {
             style={{
               flex: 1,
               paddingVertical: spacing.sm,
-              borderRadius: 8,
+              borderRadius: 11,
               alignItems: 'center',
               backgroundColor: viewMode === mode ? colors.primary : 'transparent',
             }}
           >
             <Text style={{
-              color: viewMode === mode ? colors.background : colors.textMuted,
+              color: viewMode === mode ? '#ffffff' : colors.textMuted,
               fontWeight: '700',
               fontSize: 13,
             }}>

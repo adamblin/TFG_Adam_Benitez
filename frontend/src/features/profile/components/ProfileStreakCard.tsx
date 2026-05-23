@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 
 const DOW = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
@@ -12,6 +12,7 @@ type Props = {
 };
 
 export function ProfileStreakCard({ currentStreak, longestStreak, activeDaysThisWeek }: Props) {
+  const colors = useTheme();
   return (
     <Card style={{ marginBottom: spacing.sm }}>
       {/* Top: streak count + flame */}

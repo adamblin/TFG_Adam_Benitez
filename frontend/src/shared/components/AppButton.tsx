@@ -1,6 +1,6 @@
 import { ActivityIndicator, Pressable, Text } from 'react-native';
-import { styles } from './AppButton.styles';
-import { colors } from '../theme';
+import { makeStyles } from './AppButton.styles';
+import { useTheme } from '../theme';
 
 type AppButtonProps = {
   label: string;
@@ -15,6 +15,8 @@ export function AppButton({
   disabled = false,
   loading = false,
 }: AppButtonProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   return (
     <Pressable
       onPress={onPress}

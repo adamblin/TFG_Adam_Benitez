@@ -130,3 +130,18 @@ model Streak {
 
   @@map("streaks")
 }
+
+enum PhraseCategory {
+  TASK
+  SUBTASK
+  FOCUS
+}
+
+model MotivationalPhrase {
+  id        String         @id @default(cuid())
+  text      String
+  category  PhraseCategory
+  createdAt DateTime       @default(now())
+
+  @@map("motivational_phrases")
+}

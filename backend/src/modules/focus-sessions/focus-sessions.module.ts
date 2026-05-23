@@ -15,7 +15,10 @@ import { FocusSessionsController } from './api/focus-sessions.controller';
   imports: [PrismaModule, StreaksModule, NotificationsModule, XPModule],
   controllers: [FocusSessionsController],
   providers: [
-    { provide: FocusSessionsRepository, useClass: PrismaFocusSessionsRepository },
+    {
+      provide: FocusSessionsRepository,
+      useClass: PrismaFocusSessionsRepository,
+    },
     StartSessionUseCase,
     EndSessionUseCase,
     ListSessionsUseCase,

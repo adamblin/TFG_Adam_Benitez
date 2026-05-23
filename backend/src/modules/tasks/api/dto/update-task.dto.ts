@@ -1,5 +1,11 @@
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsDateString, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsDateString,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UpdateTaskDto {
@@ -10,7 +16,11 @@ export class UpdateTaskDto {
   @MaxLength(120)
   title?: string;
 
-  @ApiPropertyOptional({ example: 'Descripcion actualizada', maxLength: 500, nullable: true })
+  @ApiPropertyOptional({
+    example: 'Descripcion actualizada',
+    maxLength: 500,
+    nullable: true,
+  })
   @Transform(({ value }) => {
     if (typeof value !== 'string') return value;
     const trimmed = value.trim();

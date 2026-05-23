@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, Text } from 'react-native';
-import { colors, spacing } from '../theme';
+import { useTheme, spacing } from '../theme';
 
 interface DurationSelectorProps {
   durations: number[];
@@ -13,6 +13,7 @@ export function DurationSelector({
   selectedDuration,
   onSelect,
 }: DurationSelectorProps) {
+  const colors = useTheme();
   return (
     <View style={{ flexDirection: 'row', gap: spacing.sm, flexWrap: 'wrap' }}>
       {durations.map((duration) => (
@@ -33,7 +34,7 @@ export function DurationSelector({
         >
           <Text
             style={{
-              color: selectedDuration === duration ? colors.background : colors.text,
+              color: selectedDuration === duration ? '#ffffff' : colors.text,
               fontSize: 16,
               fontWeight: '700',
               letterSpacing: 0.5,

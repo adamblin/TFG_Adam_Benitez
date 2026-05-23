@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../shared/theme';
+import { type ColorPalette, spacing } from '../../../shared/theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
   taskCard: {
     borderLeftWidth: 5,
     padding: spacing.md,

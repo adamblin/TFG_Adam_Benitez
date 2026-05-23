@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { colors, spacing } from '../theme';
+import { useTheme, spacing } from '../theme';
 import { Card } from './Card';
 import { ProgressBar } from './ProgressBar';
 
@@ -17,6 +17,7 @@ export function ProgressCard({
   total,
   label = 'TODAY PROGRESS',
 }: ProgressCardProps) {
+  const colors = useTheme();
   return (
     <Card style={{ marginBottom: spacing.lg }}>
       <Text style={{ color: colors.textMuted, fontSize: 12, fontWeight: '700', marginBottom: spacing.sm }}>

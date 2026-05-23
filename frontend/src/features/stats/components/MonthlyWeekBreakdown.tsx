@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 import type { WeekBreakdownItem } from '../hooks/useStatsDashboard';
 
 function fmtMin(m: number): string {
@@ -17,6 +17,7 @@ interface Props {
 }
 
 export function MonthlyWeekBreakdown({ weeks }: Props) {
+  const colors = useTheme();
   const maxFocus = Math.max(...weeks.map((w) => w.focus), 1);
   const bestIdx  = weeks.reduce((bi, w, i) => (w.focus > weeks[bi].focus ? i : bi), 0);
   const hasAny   = weeks.some((w) => w.focus > 0);

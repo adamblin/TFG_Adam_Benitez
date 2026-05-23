@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../src/shared/theme';
+import { type ColorPalette, spacing } from '../../src/shared/theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
   header: {
     marginBottom: spacing.lg,
   },

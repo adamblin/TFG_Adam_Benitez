@@ -2,9 +2,10 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Modal, Pressable, Text, View } from 'react-native';
 import { useStreakCelebrationStore } from '../../store/streak-celebration.store';
 import { useStreak } from '../../features/streaks/hooks/useStreak';
-import { colors, spacing } from '../theme';
+import { useTheme, spacing } from '../theme';
 
 export function StreakCelebrationOverlay() {
+  const colors = useTheme();
   const { visible, dismiss } = useStreakCelebrationStore();
   const { data: streak } = useStreak();
   const count = streak?.currentStreak ?? 1;

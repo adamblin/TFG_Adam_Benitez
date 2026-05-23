@@ -1,6 +1,23 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { updateTask } from '../../../services/tasks.service';
 import type { Task } from '../../../services/tasks.service';
+import { useStreakCelebrationStore } from '../../../store/streak-celebration.store';
+import { getRandomPhrase } from '../../../services/motivational-phrases.service';
+import { usePhraseModalStore } from '../../../store/phrase-modal.store';
+
+function showStreakOrPhrase(category: 'TASK' | 'SUBTASK' | 'FOCUS', emoji: string) {
+  const streakStore = useStreakCelebrationStore.getState();
+  const today = new Date().toISOString().slice(0, 10);
+  const isFirstToday = streakStore.lastCelebrationDate !== today;
+
+  streakStore.show();
+
+  if (!isFirstToday) {
+    getRandomPhrase(category)
+      .then(({ text }) => usePhraseModalStore.getState().show(text, emoji))
+      .catch(() => {});
+  }
+}
 
 export function useUpdateTask() {
   const queryClient = useQueryClient();
@@ -24,6 +41,11 @@ export function useUpdateTask() {
         })
       );
       return { previous };
+    },
+    onSuccess: (_data, { data }) => {
+      if (data.completed === true) {
+        showStreakOrPhrase('TASK', '✅');
+      }
     },
     onError: (_err, _vars, ctx) => {
       if (ctx?.previous) queryClient.setQueryData(['tasks'], ctx.previous);

@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../shared/theme';
+import { type ColorPalette, spacing } from '../../../shared/theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
   card: {
     padding: 0,
     overflow: 'hidden',
@@ -143,8 +143,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   subtaskCheckboxActive: {
-    backgroundColor: colors.primary,
-    borderColor: colors.primary,
+    backgroundColor: colors.subtask,
+    borderColor: colors.subtask,
   },
   subtaskCheck: {
     color: colors.background,
@@ -164,12 +164,12 @@ export const styles = StyleSheet.create({
   subtaskBadge: {
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: colors.primary,
+    borderColor: colors.subtask,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },
   subtaskBadgeText: {
-    color: colors.primary,
+    color: colors.subtask,
     fontSize: 11,
     fontWeight: '800',
   },

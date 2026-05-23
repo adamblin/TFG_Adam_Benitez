@@ -13,7 +13,12 @@ export type LevelInfo = {
   coins: number;
 };
 
-function computeLevel(totalXp: number): { level: number; xpInLevel: number; xpToNextLevel: number; progressPercent: number } {
+function computeLevel(totalXp: number): {
+  level: number;
+  xpInLevel: number;
+  xpToNextLevel: number;
+  progressPercent: number;
+} {
   const level = Math.floor(totalXp / XP_PER_LEVEL) + 1;
   const xpInLevel = totalXp % XP_PER_LEVEL;
   return {
@@ -68,7 +73,11 @@ export class XPService {
 
     let finalCoins = record.coins;
     if (coinsToAdd > 0) {
-      const updated = await this.userXPRepository.addCoins(userId, coinsToAdd, claimDate);
+      const updated = await this.userXPRepository.addCoins(
+        userId,
+        coinsToAdd,
+        claimDate,
+      );
       finalCoins = updated.coins;
     }
 

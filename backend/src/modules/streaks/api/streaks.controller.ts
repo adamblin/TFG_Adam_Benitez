@@ -4,22 +4,11 @@ import {
   ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
-  ApiProperty,
-  ApiPropertyOptional,
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/api/guards/jwt-auth.guard';
 import { StreaksService } from '../application/streaks.service';
-
-export class StreakResponseDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() userId!: string;
-  @ApiProperty() currentStreak!: number;
-  @ApiProperty() longestStreak!: number;
-  @ApiPropertyOptional({ nullable: true }) lastActiveDate!: string | null;
-  @ApiProperty() createdAt!: string;
-  @ApiProperty() updatedAt!: string;
-}
+import { StreakResponseDto } from './dto/streak-response.dto';
 
 type AuthRequest = Request & { user: { sub: string } };
 

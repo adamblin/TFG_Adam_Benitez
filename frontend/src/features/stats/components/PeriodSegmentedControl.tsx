@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { StatsPeriod } from '../hooks/useStatsDashboard';
-import { styles } from './PeriodSegmentedControl.styles';
+import { makeStyles } from './PeriodSegmentedControl.styles';
+import { useTheme } from '../../../shared/theme';
 
 interface PeriodSegmentedControlProps {
   value: StatsPeriod;
@@ -15,6 +16,8 @@ const options: Array<{ key: StatsPeriod; label: string }> = [
 ];
 
 export function PeriodSegmentedControl({ value, onChange }: PeriodSegmentedControlProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   return (
     <View style={styles.container}>
       {options.map((option) => {

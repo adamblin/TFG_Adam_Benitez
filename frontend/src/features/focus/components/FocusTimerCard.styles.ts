@@ -1,13 +1,13 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../shared/theme';
+import { type ColorPalette, spacing } from '../../../shared/theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
   card: {
     padding: spacing.lg,
     marginBottom: spacing.lg,
   },
   time: {
-    color: colors.primary,
+    color: colors.focusSession,
     fontSize: 64,
     fontWeight: '900',
     textAlign: 'center',

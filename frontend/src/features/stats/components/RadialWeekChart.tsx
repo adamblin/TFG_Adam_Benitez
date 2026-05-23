@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, useWindowDimensions } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 import type { WeeklyChartData } from '../hooks/useStatsDashboard';
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -29,9 +29,10 @@ function useColW() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 function HeroBadge({ up, delta }: { up: boolean; delta: number }) {
+  const colors = useTheme();
   return (
     <View style={{
-      backgroundColor: up ? '#0a2318' : '#2a0a0a',
+      backgroundColor: up ? `${colors.success}20` : `${colors.error}20`,
       paddingHorizontal: 10, paddingVertical: 6,
       borderRadius: 12,
       alignItems: 'center',
@@ -65,9 +66,10 @@ function InsightBar({ color, text }: { color: string; text: string }) {
 // Chart 1 · Focus Time  (purple / secondary)
 // ─────────────────────────────────────────────────────────────────────────────
 function FocusCard({ data }: { data: WeeklyChartData }) {
+  const colors = useTheme();
   const { focusThis, focusLast, todayIdx, totalFocusThis, totalFocusLast } = data;
   const colW  = useColW();
-  const ACCENT = colors.secondary;
+  const ACCENT = colors.focusSession;
 
   const maxVal      = Math.max(...focusThis, ...focusLast, 1);
   const bestIdx     = focusThis.reduce((bi, v, i, arr) => (v > arr[bi] ? i : bi), 0);
@@ -82,7 +84,10 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
       {/* Hero */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: spacing.xl }}>
         <View>
-          <Text style={{ color: ACCENT, fontSize: 40, fontWeight: '900', lineHeight: 44 }}>
+          <Text style={{
+            color: ACCENT, fontSize: 40, fontWeight: '900', lineHeight: 44,
+            textShadowColor: `${ACCENT}70`, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 18,
+          }}>
             {fmtMin(totalFocusThis)}
           </Text>
           <Text style={{ color: colors.text, fontSize: 14, fontWeight: '700', marginTop: 2 }}>Focus Time</Text>
@@ -122,7 +127,7 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
                     position: 'absolute', bottom: 0,
                     left: '18%', right: '18%',
                     height: ghostH,
-                    backgroundColor: '#2a1f6a',
+                    backgroundColor: `${colors.focusSession}35`,
                     borderTopLeftRadius: 3, borderTopRightRadius: 3,
                   }} />
                 )}
@@ -137,7 +142,7 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
                 ) : (
                   <View style={{
                     position: 'absolute', bottom: 0, left: 0, right: 0,
-                    height: 3, backgroundColor: '#1a2535', borderRadius: 2,
+                    height: 3, backgroundColor: colors.border, borderRadius: 2,
                   }} />
                 )}
               </View>
@@ -160,7 +165,7 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
           <Text style={{ color: colors.textMuted, fontSize: 10 }}>This week</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: '#2a1f6a' }} />
+          <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: `${colors.focusSession}35` }} />
           <Text style={{ color: colors.textMuted, fontSize: 10 }}>Last week</Text>
         </View>
       </View>
@@ -183,9 +188,10 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
 // Chart 2 · Tasks Completed  (green / success)
 // ─────────────────────────────────────────────────────────────────────────────
 function TasksCard({ data }: { data: WeeklyChartData }) {
+  const colors = useTheme();
   const { tasks, todayIdx } = data;
   const colW   = useColW();
-  const ACCENT = colors.success;
+  const ACCENT = colors.task;
 
   const total       = tasks.reduce((a, b) => a + b, 0);
   const maxVal      = Math.max(...tasks, 1);
@@ -197,7 +203,10 @@ function TasksCard({ data }: { data: WeeklyChartData }) {
       {/* Hero */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: spacing.xl }}>
         <View>
-          <Text style={{ color: ACCENT, fontSize: 40, fontWeight: '900', lineHeight: 44 }}>
+          <Text style={{
+            color: ACCENT, fontSize: 40, fontWeight: '900', lineHeight: 44,
+            textShadowColor: `${ACCENT}70`, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 18,
+          }}>
             {total}
           </Text>
           <Text style={{ color: colors.text, fontSize: 14, fontWeight: '700', marginTop: 2 }}>Tasks Done</Text>
@@ -249,7 +258,7 @@ function TasksCard({ data }: { data: WeeklyChartData }) {
                 ) : (
                   <View style={{
                     position: 'absolute', bottom: 0, left: 0, right: 0,
-                    height: 3, backgroundColor: '#1a2535', borderRadius: 2,
+                    height: 3, backgroundColor: colors.border, borderRadius: 2,
                   }} />
                 )}
               </View>
@@ -283,9 +292,10 @@ function TasksCard({ data }: { data: WeeklyChartData }) {
 // Chart 3 · Subtasks Done  (orange / warning)
 // ─────────────────────────────────────────────────────────────────────────────
 function SubtasksCard({ data }: { data: WeeklyChartData }) {
+  const colors = useTheme();
   const { subtasks, tasks, todayIdx } = data;
   const colW   = useColW();
-  const ACCENT = '#F5A623';
+  const ACCENT = colors.subtask;
 
   const maxSub      = Math.max(...subtasks, 1);
   const total       = subtasks.reduce((a, b) => a + b, 0);
@@ -299,7 +309,10 @@ function SubtasksCard({ data }: { data: WeeklyChartData }) {
       {/* Hero */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: spacing.xl }}>
         <View>
-          <Text style={{ color: ACCENT, fontSize: 40, fontWeight: '900', lineHeight: 44 }}>
+          <Text style={{
+            color: ACCENT, fontSize: 40, fontWeight: '900', lineHeight: 44,
+            textShadowColor: `${ACCENT}70`, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 18,
+          }}>
             {total}
           </Text>
           <Text style={{ color: colors.text, fontSize: 14, fontWeight: '700', marginTop: 2 }}>Subtasks Done</Text>
@@ -349,7 +362,7 @@ function SubtasksCard({ data }: { data: WeeklyChartData }) {
                 ) : (
                   <View style={{
                     position: 'absolute', bottom: 0, left: 0, right: 0,
-                    height: 3, backgroundColor: '#1a2535', borderRadius: 2,
+                    height: 3, backgroundColor: colors.border, borderRadius: 2,
                   }} />
                 )}
               </View>

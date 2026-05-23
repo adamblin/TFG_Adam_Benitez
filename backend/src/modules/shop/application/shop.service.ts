@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { XPService } from 'src/modules/xp/application/xp.service';
 import { ShopRepository } from '../domain/repositories/shop.repository';
 import { SHOP_CATALOG, findCatalogItem } from './shop.catalog';
@@ -39,7 +43,10 @@ export class ShopService {
     return SHOP_CATALOG.map((item) => ({
       ...item,
       owned: item.price === 0 || ownedSet.has(item.id),
-      equipped: item.type === 'icon' ? item.id === equippedIcon : item.id === equippedTheme,
+      equipped:
+        item.type === 'icon'
+          ? item.id === equippedIcon
+          : item.id === equippedTheme,
     }));
   }
 
@@ -54,10 +61,12 @@ export class ShopService {
   async purchase(userId: string, itemId: string): Promise<{ coins: number }> {
     const item = findCatalogItem(itemId);
     if (!item) throw new NotFoundException(`Item not found: ${itemId}`);
-    if (item.price === 0) throw new BadRequestException('This item is free — no purchase needed');
+    if (item.price === 0)
+      throw new BadRequestException('This item is free — no purchase needed');
 
     const ownedIds = await this.shopRepository.getOwnedItemIds(userId);
-    if (ownedIds.includes(itemId)) throw new BadRequestException('Item already owned');
+    if (ownedIds.includes(itemId))
+      throw new BadRequestException('Item already owned');
 
     const remainingCoins = await this.xpService.spendCoins(userId, item.price);
     await this.shopRepository.addToInventory(userId, itemId);
@@ -77,7 +86,8 @@ export class ShopService {
       }
     }
 
-    const update = item.type === 'icon' ? { iconColor: itemId } : { theme: itemId };
+    const update =
+      item.type === 'icon' ? { iconColor: itemId } : { theme: itemId };
     const prefs = await this.shopRepository.upsertPreferences(userId, update);
     return { iconColor: prefs.iconColor, theme: prefs.theme };
   }

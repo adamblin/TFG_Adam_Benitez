@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert } from 'react-native';
+import { Alert, AppState } from 'react-native';
 import { useQueryClient } from '@tanstack/react-query';
 import { startFocusSession, endFocusSession } from '../../../services/focus.service';
 import { useStreakCelebrationStore } from '../../../store/streak-celebration.store';
+import { useFocusSessionStore } from '../../../store/focus-session.store';
+import { getRandomPhrase } from '../../../services/motivational-phrases.service';
+import { usePhraseModalStore } from '../../../store/phrase-modal.store';
 
 type UseFocusSessionOptions = {
   initialTaskId?: string | null;
@@ -20,6 +23,10 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
   const [needCompletion, setNeedCompletion] = useState(false);
   const sessionIdRef = useRef<string | null>(null);
 
+  // Stable ref so AppState handler never captures a stale stopSession
+  const stopSessionRef = useRef<() => Promise<void>>(async () => {});
+
+  // ── Countdown timer ──────────────────────────────────────────────────────────
   useEffect(() => {
     if (!isRunning || secondsLeft <= 0) return;
 
@@ -38,6 +45,7 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
     return () => clearInterval(timer);
   }, [isRunning, secondsLeft]);
 
+  // ── Natural completion ────────────────────────────────────────────────────────
   useEffect(() => {
     if (!needCompletion) return;
     setNeedCompletion(false);
@@ -46,31 +54,67 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
     if (!sid) return;
 
     endFocusSession({ sessionId: sid, completed: true })
-      .then(({ message }) => {
+      .then(() => {
         sessionIdRef.current = null;
+        setIsStarted(false);
+        setTotalSeconds(0);
+        useFocusSessionStore.getState().deactivate();
+
         queryClient.invalidateQueries({ queryKey: ['focus-sessions'] });
         queryClient.invalidateQueries({ queryKey: ['streak'] });
         queryClient.invalidateQueries({ queryKey: ['user-xp'] });
-        useStreakCelebrationStore.getState().show();
-        Alert.alert('Session complete', message);
+
+        const streakStore = useStreakCelebrationStore.getState();
+        const today = new Date().toISOString().slice(0, 10);
+        const isFirstToday = streakStore.lastCelebrationDate !== today;
+        streakStore.show();
+
+        if (!isFirstToday) {
+          getRandomPhrase('FOCUS')
+            .then(({ text }) => usePhraseModalStore.getState().show(text, '🧠'))
+            .catch(() => {});
+        }
       })
       .catch(() => {
         sessionIdRef.current = null;
-        Alert.alert('Session complete', 'Great work! Your session has been recorded.');
+        setIsStarted(false);
+        setTotalSeconds(0);
+        useFocusSessionStore.getState().deactivate();
       });
   }, [needCompletion, queryClient]);
 
-  const formattedTime = useMemo(() => {
-    const displaySeconds = isStarted ? secondsLeft : selectedDuration * 60;
-    const minutes = Math.floor(displaySeconds / 60);
-    const seconds = displaySeconds % 60;
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  }, [secondsLeft, selectedDuration, isStarted]);
+  // ── AppState: cancel session when app goes to background (no XP/coins) ───────
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (nextState) => {
+      if (nextState === 'background' && sessionIdRef.current) {
+        void stopSessionRef.current();
+      }
+    });
+    return () => sub.remove();
+  }, []);
 
-  const progressPercent = useMemo(() => {
-    if (!isStarted || !totalSeconds) return 0;
-    return Math.round(((totalSeconds - secondsLeft) / totalSeconds) * 100);
-  }, [secondsLeft, totalSeconds, isStarted]);
+  // ── Actions ──────────────────────────────────────────────────────────────────
+  const stopSession = async () => {
+    const sid = sessionIdRef.current;
+    sessionIdRef.current = null;
+    setIsRunning(false);
+    setIsStarted(false);
+    setSecondsLeft(0);
+    setTotalSeconds(0);
+    useFocusSessionStore.getState().deactivate();
+
+    if (sid) {
+      try {
+        await endFocusSession({ sessionId: sid, completed: false });
+        queryClient.invalidateQueries({ queryKey: ['focus-sessions'] });
+      } catch {
+        // session stays incomplete in backend — acceptable
+      }
+    }
+  };
+
+  // Keep the ref up to date every render
+  stopSessionRef.current = stopSession;
 
   const startSession = async () => {
     if (isLoading || isStarted) return;
@@ -86,6 +130,7 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
       setSecondsLeft(durationInSeconds);
       setIsStarted(true);
       setIsRunning(true);
+      useFocusSessionStore.getState().activate(stopSession);
     } catch {
       Alert.alert('Error', 'Could not start the focus session. Please try again.');
     } finally {
@@ -96,24 +141,6 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
   const togglePauseResume = () => {
     if (!isStarted || secondsLeft === 0) return;
     setIsRunning((prev) => !prev);
-  };
-
-  const stopSession = async () => {
-    const sid = sessionIdRef.current;
-    sessionIdRef.current = null;
-    setIsRunning(false);
-    setIsStarted(false);
-    setSecondsLeft(0);
-    setTotalSeconds(0);
-
-    if (sid) {
-      try {
-        await endFocusSession({ sessionId: sid, completed: false });
-        queryClient.invalidateQueries({ queryKey: ['focus-sessions'] });
-      } catch {
-        // session remains as incomplete in backend — acceptable
-      }
-    }
   };
 
   const selectDuration = (duration: number) => {
@@ -130,8 +157,16 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
     isRunning,
     isStarted,
     isLoading,
-    formattedTime,
-    progressPercent,
+    formattedTime: useMemo(() => {
+      const displaySeconds = isStarted ? secondsLeft : selectedDuration * 60;
+      const m = Math.floor(displaySeconds / 60);
+      const s = displaySeconds % 60;
+      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }, [secondsLeft, selectedDuration, isStarted]),
+    progressPercent: useMemo(() => {
+      if (!isStarted || !totalSeconds) return 0;
+      return Math.round(((totalSeconds - secondsLeft) / totalSeconds) * 100);
+    }, [secondsLeft, totalSeconds, isStarted]),
     startSession,
     togglePauseResume,
     stopSession,

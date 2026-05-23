@@ -11,6 +11,7 @@ import { StreaksModule } from './modules/streaks/streaks.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { XPModule } from './modules/xp/xp.module';
 import { ShopModule } from './modules/shop/shop.module';
+import { MotivationalPhrasesModule } from './modules/motivational-phrases/motivational-phrases.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ShopModule } from './modules/shop/shop.module';
     NotificationsModule,
     XPModule,
     ShopModule,
+    MotivationalPhrasesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

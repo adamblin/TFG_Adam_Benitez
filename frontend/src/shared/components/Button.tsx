@@ -1,6 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, TouchableOpacityProps } from 'react-native';
-import { colors, spacing } from '../theme';
+import { useTheme } from '../theme';
+import { spacing } from '../theme/colors';
 
 interface ButtonProps extends TouchableOpacityProps {
   label: string;
@@ -8,22 +9,29 @@ interface ButtonProps extends TouchableOpacityProps {
 }
 
 export function Button({ label, variant = 'primary', style, ...props }: ButtonProps) {
+  const colors = useTheme();
+
   const getStyles = () => {
     switch (variant) {
       case 'primary':
         return {
           button: {
             backgroundColor: colors.primary,
-            paddingVertical: spacing.md,
-            borderRadius: 12,
+            paddingVertical: spacing.md + 2,
+            borderRadius: 14,
             alignItems: 'center' as const,
             borderWidth: 0,
+            shadowColor: colors.primary,
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.4,
+            shadowRadius: 10,
+            elevation: 6,
           },
           label: {
-            color: colors.background,
+            color: '#ffffff',
             fontSize: 16,
-            fontWeight: '700' as const,
-            letterSpacing: 0.5,
+            fontWeight: '800' as const,
+            letterSpacing: 0.6,
           },
         };
       case 'secondary':
@@ -31,10 +39,10 @@ export function Button({ label, variant = 'primary', style, ...props }: ButtonPr
           button: {
             backgroundColor: colors.surface,
             paddingVertical: spacing.md,
-            borderRadius: 12,
+            borderRadius: 14,
             alignItems: 'center' as const,
-            borderWidth: 2,
-            borderColor: colors.border,
+            borderWidth: 1,
+            borderColor: `${colors.primary}40`,
           },
           label: {
             color: colors.text,
@@ -46,12 +54,12 @@ export function Button({ label, variant = 'primary', style, ...props }: ButtonPr
       case 'outline':
         return {
           button: {
-            backgroundColor: colors.background,
+            backgroundColor: 'transparent',
             paddingVertical: spacing.lg,
             borderRadius: 999,
             alignItems: 'center' as const,
             borderWidth: 2,
-            borderColor: colors.text,
+            borderColor: `${colors.primary}60`,
           },
           label: {
             color: colors.text,

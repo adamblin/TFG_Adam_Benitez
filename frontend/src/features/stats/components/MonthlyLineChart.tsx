@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, useWindowDimensions } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 import type { MonthlyDailyPoint } from '../hooks/useStatsDashboard';
 
 const SCALE = [
@@ -36,6 +36,7 @@ interface Props {
 }
 
 export function MonthlyLineChart({ data }: Props) {
+  const colors = useTheme();
   const { width } = useWindowDimensions();
 
   const cardPad  = spacing.md * 2;

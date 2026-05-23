@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { TasksRepository } from '../../domain/repositories/tasks.repository';
 import { TaskEntity } from '../../domain/entities/task.entity';
 

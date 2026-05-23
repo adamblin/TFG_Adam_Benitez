@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 
 type Props = { week: boolean[] };
 
 const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 export function WeekProgressRow({ week }: Props) {
+  const colors = useTheme();
   return (
     <Card style={{ padding: spacing.md, marginBottom: spacing.lg, borderRadius: 12 }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

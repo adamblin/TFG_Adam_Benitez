@@ -14,5 +14,6 @@ export class SessionResponseDto {
 
 export class EndSessionResponseDto {
   @ApiProperty({ type: SessionResponseDto }) session!: SessionResponseDto;
-  @ApiProperty({ example: 'Focus session complete! Every session counts.' }) message!: string;
+  @ApiProperty({ example: 'Focus session complete! Every session counts.' })
+  message!: string;
 }

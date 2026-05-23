@@ -1,8 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 
 export function MonthProgressGrid() {
+  const colors = useTheme();
   const days = Array.from({ length: 28 }).map((_, i) => ({
     id: String(i),
     done: Math.random() > 0.6,

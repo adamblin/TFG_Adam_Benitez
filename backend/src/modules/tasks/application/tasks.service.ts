@@ -7,6 +7,7 @@ import { CreateTaskUseCase } from './use-cases/create-task.use-case';
 import { UpdateTaskUseCase } from './use-cases/update-task.use-case';
 import { DeleteTaskUseCase } from './use-cases/delete-task.use-case';
 import { GetTaskByIdUseCase } from './use-cases/get-task-by-id.use-case';
+import { BreakdownTaskUseCase } from './use-cases/breakdown-task.use-case';
 
 @Injectable()
 export class TasksService {
@@ -16,6 +17,7 @@ export class TasksService {
     private readonly updateTaskUseCase: UpdateTaskUseCase,
     private readonly deleteTaskUseCase: DeleteTaskUseCase,
     private readonly getTaskByIdUseCase: GetTaskByIdUseCase,
+    private readonly breakdownTaskUseCase: BreakdownTaskUseCase,
   ) {}
 
   listMyTasks(userId: string): Promise<TaskEntity[]> {
@@ -31,14 +33,23 @@ export class TasksService {
     });
   }
 
-  updateTask(userId: string, taskId: string, dto: UpdateTaskDto): Promise<TaskEntity> {
+  updateTask(
+    userId: string,
+    taskId: string,
+    dto: UpdateTaskDto,
+  ): Promise<TaskEntity> {
     return this.updateTaskUseCase.execute({
       userId,
       taskId,
       title: dto.title,
       description: dto.description,
       completed: dto.completed,
-      dueDate: dto.dueDate !== undefined ? (dto.dueDate ? new Date(dto.dueDate) : null) : undefined,
+      dueDate:
+        dto.dueDate !== undefined
+          ? dto.dueDate
+            ? new Date(dto.dueDate)
+            : null
+          : undefined,
     });
   }
 
@@ -48,5 +59,11 @@ export class TasksService {
 
   getTaskById(userId: string, taskId: string): Promise<TaskEntity> {
     return this.getTaskByIdUseCase.execute(userId, taskId);
+  }
+
+  breakdownTask(
+    title: string,
+  ): Promise<import('./use-cases/breakdown-task.use-case').BreakdownResult> {
+    return this.breakdownTaskUseCase.execute(title);
   }
 }

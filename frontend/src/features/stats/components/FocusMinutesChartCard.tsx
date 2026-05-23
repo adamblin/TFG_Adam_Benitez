@@ -2,9 +2,9 @@ import React from 'react';
 import { Text, useWindowDimensions } from 'react-native';
 import { BarChart } from 'react-native-chart-kit';
 import { Card } from '../../../shared/components';
-import { colors } from '../../../shared/theme';
+import { useTheme } from '../../../shared/theme';
 import { StatsPeriod } from '../hooks/useStatsDashboard';
-import { styles } from './ChartCards.styles';
+import { makeStyles } from './ChartCards.styles';
 
 interface FocusMinutesChartCardProps {
   period: StatsPeriod;
@@ -13,6 +13,8 @@ interface FocusMinutesChartCardProps {
 }
 
 export function FocusMinutesChartCard({ period, labels, data }: FocusMinutesChartCardProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   const { width } = useWindowDimensions();
   const chartWidth = Math.max(280, width - 56);
 

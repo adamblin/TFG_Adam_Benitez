@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../../shared/theme';
+import { type ColorPalette } from '../../../shared/theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
 	message: {
 		marginTop: 16,
 		paddingVertical: 10,

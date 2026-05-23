@@ -10,7 +10,10 @@ export class StartSessionUseCase {
   async execute(input: StartSessionInput): Promise<FocusSessionEntity> {
     const active = await this.repo.findActive(input.userId);
     if (active) {
-      await this.repo.update(active.id, { endedAt: new Date(), completed: false });
+      await this.repo.update(active.id, {
+        endedAt: new Date(),
+        completed: false,
+      });
     }
 
     return this.repo.create({

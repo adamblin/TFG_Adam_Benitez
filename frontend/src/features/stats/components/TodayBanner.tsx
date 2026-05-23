@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { Card } from '../../../shared/components';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 import { TodayStats } from '../hooks/useStatsDashboard';
 
 function MetricColumn({
@@ -9,6 +9,7 @@ function MetricColumn({
 }: {
   label: string; value: number; suffix: string; color: string;
 }) {
+  const colors = useTheme();
   return (
     <View style={{ flex: 1 }}>
       <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 2, marginBottom: 4 }}>
@@ -32,6 +33,7 @@ interface TodayBannerProps {
 }
 
 export function TodayBanner({ today }: TodayBannerProps) {
+  const colors = useTheme();
   return (
     <Card style={{ marginBottom: spacing.md }}>
 

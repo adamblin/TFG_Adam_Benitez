@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import { PageShell, SectionLabel } from '../../src/shared/components';
 import {
   ProfileHeaderCard,
@@ -14,7 +14,6 @@ import { useProfileScreen } from '../../src/features/profile/hooks/useProfileScr
 import { useStreak } from '../../src/features/streaks/hooks/useStreak';
 import { useUserXP } from '../../src/features/xp/hooks/useUserXP';
 import { useFocusSessions } from '../../src/features/focus/hooks/useFocusSessions';
-import { usePreferences } from '../../src/features/shop/hooks/useShop';
 import {
   AnnualCalendarHeatmap,
   BarChartCard,
@@ -26,7 +25,7 @@ import {
   TodayBanner,
 } from '../../src/features/stats/components';
 import { useStatsDashboard } from '../../src/features/stats/hooks/useStatsDashboard';
-import { colors, spacing } from '../../src/shared/theme';
+import { useTheme, spacing } from '../../src/shared/theme';
 import { styles } from './styles';
 
 function isSameDay(a: Date, b: Date) {
@@ -36,6 +35,7 @@ function isSameDay(a: Date, b: Date) {
 }
 
 export default function ProfileScreen() {
+  const colors = useTheme();
   const {
     currentUser,
     avatarLetter,
@@ -48,8 +48,6 @@ export default function ProfileScreen() {
   const { data: streak } = useStreak();
   const { data: xp } = useUserXP();
   const { data: sessions = [] } = useFocusSessions();
-
-  usePreferences();
 
   const {
     period,
@@ -83,13 +81,6 @@ export default function ProfileScreen() {
 
   const username = currentUser?.username ?? 'guest_user';
   const userId = currentUser?.id ?? 'unknown-id';
-
-  const handleLogoutPress = () => {
-    Alert.alert('Sign out', 'Do you want to close your current session?', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign out', style: 'destructive', onPress: handleLogout },
-    ]);
-  };
 
   return (
     <PageShell>
@@ -156,27 +147,27 @@ export default function ProfileScreen() {
               title="Focus Time"
               labels={focusSeries.labels}
               data={focusSeries.data}
-              color={colors.secondary}
+              color={colors.focusSession}
               yAxisSuffix="m"
             />
             <BarChartCard
               title="Tasks Done"
               labels={tasksSeries.labels}
               data={tasksSeries.data}
-              color={colors.success}
+              color={colors.task}
             />
             <BarChartCard
               title="Subtasks Done"
               labels={subtasksSeries.labels}
               data={subtasksSeries.data}
-              color="#F5A623"
+              color={colors.subtask}
             />
           </>
         )}
       </View>
 
       <View style={{ marginTop: spacing.lg }}>
-        <ProfileLogoutButton onPress={handleLogoutPress} />
+        <ProfileLogoutButton onPress={handleLogout} />
       </View>
     </PageShell>
   );

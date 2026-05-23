@@ -1,7 +1,7 @@
 import { Pressable, Text, View } from 'react-native';
 import type { FormMode } from '../hooks/useLoginForm';
-import { styles } from './FormModeSwitcher.styles';
-import { colors } from '../../../shared/theme';
+import { makeStyles } from './FormModeSwitcher.styles';
+import { useTheme } from '../../../shared/theme';
 
 type FormModeSwitcherProps = {
   mode: FormMode;
@@ -11,6 +11,8 @@ type FormModeSwitcherProps = {
 const FORM_MODES: FormMode[] = ['login', 'register'];
 
 export function FormModeSwitcher({ mode, onChange }: FormModeSwitcherProps) {
+  const colors = useTheme();
+  const styles = makeStyles(colors);
   return (
     <View style={styles.switchRow}>
       {FORM_MODES.map((value) => (

@@ -9,7 +9,11 @@ export class CreateTaskDto {
   @MaxLength(120)
   title!: string;
 
-  @ApiPropertyOptional({ example: 'Finish the tasks module', maxLength: 500, nullable: true })
+  @ApiPropertyOptional({
+    example: 'Finish the tasks module',
+    maxLength: 500,
+    nullable: true,
+  })
   @Transform(({ value }) => {
     if (typeof value !== 'string') return value;
     const trimmed = value.trim();

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text } from 'react-native';
-import { colors, spacing } from '../../../shared/theme';
+import { useTheme, spacing } from '../../../shared/theme';
 
 interface BarChartCardProps {
   title: string;
@@ -15,6 +15,7 @@ const LABEL_RESERVE = 24;
 const MAX_BAR_HEIGHT = BAR_AREA_HEIGHT - LABEL_RESERVE;
 
 export function BarChartCard({ title, labels, data, color, yAxisSuffix = '' }: BarChartCardProps) {
+  const colors = useTheme();
   const maxValue = useMemo(() => Math.max(...data, 1), [data]);
   const total = useMemo(() => data.reduce((a, b) => a + b, 0), [data]);
 
@@ -39,7 +40,10 @@ export function BarChartCard({ title, labels, data, color, yAxisSuffix = '' }: B
       >
         <Text style={{ color: colors.text, fontSize: 15, fontWeight: '800' }}>{title}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: 2 }}>
-          <Text style={{ color, fontSize: 20, fontWeight: '900', lineHeight: 22 }}>
+          <Text style={{
+            color, fontSize: 20, fontWeight: '900', lineHeight: 22,
+            textShadowColor: `${color}80`, textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 12,
+          }}>
             {total}
           </Text>
           {yAxisSuffix ? (

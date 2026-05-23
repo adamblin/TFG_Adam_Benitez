@@ -1,6 +1,5 @@
 import { TaskEntity } from '../entities/task.entity';
 
-
 export abstract class TasksRepository {
   abstract findByUserId(userId: string): Promise<TaskEntity[]>;
 

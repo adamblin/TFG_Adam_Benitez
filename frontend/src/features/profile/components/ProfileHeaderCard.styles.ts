@@ -1,39 +1,35 @@
 import { StyleSheet } from 'react-native';
-import { colors, spacing } from '../../../shared/theme';
+import { type ColorPalette, spacing } from '../../../shared/theme';
 
-export const styles = StyleSheet.create({
+export const makeStyles = (colors: ColorPalette) => StyleSheet.create({
   card: {
     marginBottom: spacing.sm,
     alignItems: 'center',
   },
   avatar: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: colors.border,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: spacing.sm,
   },
   avatarLetter: {
-    color: colors.text,
-    fontSize: 30,
+    color: '#fff',
+    fontSize: 34,
     fontWeight: '900',
   },
   username: {
     color: colors.text,
-    fontSize: 33,
+    fontSize: 26,
     fontWeight: '900',
-    marginBottom: spacing.xs,
-  },
-  subtitle: {
-    color: colors.textMuted,
-    fontSize: 13,
-    marginBottom: spacing.xs,
+    marginBottom: 2,
+    letterSpacing: -0.5,
   },
   userId: {
     color: colors.textMuted,
     fontSize: 12,
+    fontWeight: '600',
+    letterSpacing: 1.2,
   },
 });

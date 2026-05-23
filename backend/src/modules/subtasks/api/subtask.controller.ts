@@ -87,7 +87,11 @@ export class SubtaskController {
     @Param('id') id: string,
     @Body() dto: UpdateSubtaskDto,
   ): Promise<SubtaskResponseDto> {
-    const subtask = await this.subtaskService.updateSubtask(req.user.sub, id, dto);
+    const subtask = await this.subtaskService.updateSubtask(
+      req.user.sub,
+      id,
+      dto,
+    );
     return SubtaskResponseMapper.toDto(subtask);
   }
 
