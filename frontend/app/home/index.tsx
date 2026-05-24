@@ -14,6 +14,7 @@ import {
 import { useTasks } from '../../src/features/tasks/hooks/useTasks';
 import { useStreak } from '../../src/features/streaks/hooks/useStreak';
 import { useAuthStore } from '../../src/store/auth.store';
+import { ActivityIndicator } from 'react-native';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -25,8 +26,9 @@ function getGreeting(): string {
 export default function HomeScreen() {
   const colors = useTheme();
   const router = useRouter();
-  const { data: tasks = [] } = useTasks();
-  const { data: streak } = useStreak();
+  const { data: tasks = [], isLoading: tasksLoading } = useTasks();
+  const { data: streak, isLoading: streakLoading } = useStreak();
+  const isLoading = tasksLoading || streakLoading;
   const currentUser = useAuthStore((state) => state.currentUser);
 
   const completedTasks = tasks.filter((task) => task.completed).length;
@@ -45,6 +47,14 @@ export default function HomeScreen() {
   const subtaskPercent = totalSubtasks > 0
     ? Math.round((completedSubtasks / totalSubtasks) * 100)
     : 0;
+
+  if (isLoading) {
+    return (
+      <PageShell>
+        <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 60 }} />
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

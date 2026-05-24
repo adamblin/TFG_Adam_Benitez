@@ -6,6 +6,7 @@ import {
 import { TasksRepository } from '../../domain/repositories/tasks.repository';
 import { TaskEntity } from '../../domain/entities/task.entity';
 
+/** Obtiene una tarea por id verificando que pertenezca al usuario solicitante. */
 @Injectable()
 export class GetTaskByIdUseCase {
   constructor(private readonly tasksRepository: TasksRepository) {}

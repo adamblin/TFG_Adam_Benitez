@@ -22,6 +22,7 @@ const DEV_DEFAULTS = __DEV__
       password: '',
     };
 
+/** Gestiona el formulario de autenticación en modo login o registro, incluyendo validación y navegación post-login. */
 export function useLoginForm() {
   const router = useRouter();
   const setSession = useAuthStore((state) => state.setSession);

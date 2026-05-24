@@ -8,6 +8,7 @@ import { LoginUserUseCase } from './use-cases/login-user.use-case';
 import { RefreshTokenUseCase } from './use-cases/refresh-token.use-case';
 import { LoginResponse } from './types/login-response.type';
 
+/** Orquesta los use cases de autenticación: registro, login y renovación de token. */
 @Injectable()
 export class AuthService {
   constructor(

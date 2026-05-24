@@ -7,6 +7,7 @@ import {
 import { ListSessionsUseCase } from './use-cases/list-sessions.use-case';
 import { FocusSessionEntity } from '../domain/entities/focus-session.entity';
 
+/** Orquesta el ciclo de vida de las sesiones de concentración: inicio, fin y listado. */
 @Injectable()
 export class FocusSessionsService {
   constructor(

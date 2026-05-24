@@ -11,6 +11,10 @@ const SYSTEM_PROMPT =
 export type BreakdownResult = { title: string; subtasks: string[] };
 
 @Injectable()
+/**
+ * Descompone una descripción de tarea en nombre corto y entre 4-8 subtareas ordenadas
+ * usando el modelo Gemini 2.5 Flash Lite. Lanza ServiceUnavailableException si la cuota se agota.
+ */
 export class BreakdownTaskUseCase {
   private readonly genAI: GoogleGenerativeAI;
 
@@ -34,7 +38,9 @@ export class BreakdownTaskUseCase {
       if (msg.includes('429') || msg.toLowerCase().includes('quota')) {
         throw new ServiceUnavailableException('quota_exceeded');
       }
-      throw new ServiceUnavailableException('AI breakdown service is unavailable. Check GEMINI_API_KEY.');
+      throw new ServiceUnavailableException(
+        'AI breakdown service is unavailable. Check GEMINI_API_KEY.',
+      );
     }
 
     const lines = text

@@ -8,6 +8,7 @@ import { TasksRepository } from 'src/modules/tasks/domain/repositories/tasks.rep
 import { SubtaskEntity } from '../../domain/entities/subtask.entity';
 
 @Injectable()
+/** Lista todas las subtareas de una tarea verificando que el usuario sea propietario. */
 export class ListSubtasksUseCase {
   constructor(
     private readonly subtasksRepository: SubtasksRepository,

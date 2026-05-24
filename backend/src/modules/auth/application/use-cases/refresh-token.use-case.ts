@@ -11,6 +11,7 @@ type RefreshTokenPayload = {
   type?: string;
 };
 
+/** Verifica el refresh token y emite un nuevo par de tokens JWT sin requerir contraseña. */
 @Injectable()
 export class RefreshTokenUseCase {
   constructor(

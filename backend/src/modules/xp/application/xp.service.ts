@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserXPRepository } from '../domain/repositories/user-xp.repository';
 
 const XP_PER_LEVEL = 200;
@@ -37,6 +37,7 @@ function isSameDay(a: Date, b: Date): boolean {
   );
 }
 
+/** Gestiona el sistema de progresión: XP, niveles (200 XP/nivel) y monedas del usuario. */
 @Injectable()
 export class XPService {
   constructor(private readonly userXPRepository: UserXPRepository) {}
@@ -47,6 +48,11 @@ export class XPService {
     return { ...computeLevel(xp), totalXp: xp, coins: record?.coins ?? 0 };
   }
 
+  /**
+   * Otorga XP al usuario. Concede además:
+   * - 10 monedas la primera acción productiva del día (daily bonus).
+   * - N monedas al subir al nivel N (level-up bonus).
+   */
   async awardXP(userId: string, amount: number): Promise<LevelInfo> {
     const before = await this.userXPRepository.findByUserId(userId);
     const prevLevel = computeLevel(before?.totalXp ?? 0).level;
@@ -88,7 +94,9 @@ export class XPService {
     const record = await this.userXPRepository.findByUserId(userId);
     const balance = record?.coins ?? 0;
     if (balance < amount) {
-      throw new Error(`Insufficient coins: have ${balance}, need ${amount}`);
+      throw new BadRequestException(
+        `Insufficient coins: have ${balance}, need ${amount}`,
+      );
     }
     const updated = await this.userXPRepository.spendCoins(userId, amount);
     return updated.coins;

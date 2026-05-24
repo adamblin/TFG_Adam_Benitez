@@ -23,6 +23,7 @@ export type PreferencesDto = {
   theme: string;
 };
 
+/** Gestiona el catálogo de items cosméticos, el inventario del usuario, las compras con coins y el equipamiento activo. */
 @Injectable()
 export class ShopService {
   constructor(

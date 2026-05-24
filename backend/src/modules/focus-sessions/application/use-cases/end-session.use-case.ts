@@ -15,6 +15,11 @@ export type EndSessionResult = {
   message: string;
 };
 
+/**
+ * Finaliza una sesión de concentración.
+ * Si se marca como completada: otorga XP (2 × minutos), registra actividad de racha
+ * y genera un mensaje motivacional personalizado según la racha y las sesiones del día.
+ */
 @Injectable()
 export class EndSessionUseCase {
   constructor(

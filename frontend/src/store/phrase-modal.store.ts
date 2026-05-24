@@ -1,3 +1,4 @@
+/** Controla la visibilidad del modal de frases motivacionales y el texto/emoji que muestra. */
 import { create } from 'zustand';
 
 type PhraseModalState = {

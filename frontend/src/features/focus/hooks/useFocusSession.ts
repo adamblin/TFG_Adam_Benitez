@@ -11,6 +11,10 @@ type UseFocusSessionOptions = {
   initialTaskId?: string | null;
 };
 
+/**
+ * Gestiona el ciclo completo de una sesión de concentración: temporizador con pausa/reanudación,
+ * manejo de app en background (pausa automática), y recompensas al completar (XP, racha, frase motivacional).
+ */
 export function useFocusSession(options?: UseFocusSessionOptions) {
   const queryClient = useQueryClient();
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(options?.initialTaskId ?? null);
@@ -67,6 +71,7 @@ export function useFocusSession(options?: UseFocusSessionOptions) {
         const streakStore = useStreakCelebrationStore.getState();
         const today = new Date().toISOString().slice(0, 10);
         const isFirstToday = streakStore.lastCelebrationDate !== today;
+
         streakStore.show();
 
         if (!isFirstToday) {

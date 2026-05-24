@@ -7,6 +7,7 @@ import { SubtasksRepository } from '../../domain/repositories/subtasks.repositor
 import { TasksRepository } from 'src/modules/tasks/domain/repositories/tasks.repository';
 
 @Injectable()
+/** Elimina una subtarea tras verificar que el usuario es propietario de la tarea padre. */
 export class DeleteSubtaskUseCase {
   constructor(
     private readonly subtasksRepository: SubtasksRepository,

@@ -5,6 +5,9 @@ import { StreakCelebrationOverlay, MotivationalPhraseModal } from '../src/shared
 import { useTheme } from '../src/shared/theme';
 import { usePreferences } from '../src/features/shop/hooks/useShop';
 import { useAuthStore } from '../src/store/auth.store';
+import { hydrateStreakStore } from '../src/store/streak-celebration.store';
+
+hydrateStreakStore();
 
 const queryClient = new QueryClient();
 

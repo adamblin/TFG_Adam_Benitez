@@ -53,6 +53,7 @@ export class TaskController {
 
   @UseGuards(JwtAuthGuard)
   @Post('breakdown')
+  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Break a task down into subtasks using AI' })
   @ApiOkResponse({ type: BreakdownResponseDto })

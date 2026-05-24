@@ -165,7 +165,7 @@ async function main() {
     writeLine('Starting frontend in background...');
     frontendProcess = runDetached(
       npmCommand,
-      ['run', 'start', '--', '--port', '8081'],
+      ['run', 'start', '--', '--port', '8081', '--clear'],
       frontendPath,
       path.join(logsDir, 'frontend.out.log'),
       path.join(logsDir, 'frontend.err.log'),

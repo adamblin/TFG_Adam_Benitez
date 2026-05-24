@@ -3,4 +3,6 @@ export type UserEntity = {
   email: string;
   username: string;
   passwordHash: string;
+  createdAt: Date;
+  updatedAt: Date;
 };

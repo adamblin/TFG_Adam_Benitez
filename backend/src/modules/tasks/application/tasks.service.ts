@@ -9,6 +9,7 @@ import { DeleteTaskUseCase } from './use-cases/delete-task.use-case';
 import { GetTaskByIdUseCase } from './use-cases/get-task-by-id.use-case';
 import { BreakdownTaskUseCase } from './use-cases/breakdown-task.use-case';
 
+/** Orquesta las operaciones CRUD de tareas y la descomposición con IA. */
 @Injectable()
 export class TasksService {
   constructor(

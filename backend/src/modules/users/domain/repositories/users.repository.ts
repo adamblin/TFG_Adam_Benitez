@@ -12,4 +12,9 @@ export abstract class UsersRepository {
   abstract findByUsername(username: string): Promise<UserEntity | null>;
 
   abstract findById(id: string): Promise<UserEntity | null>;
+
+  abstract update(
+    id: string,
+    data: { username?: string; email?: string },
+  ): Promise<UserEntity>;
 }

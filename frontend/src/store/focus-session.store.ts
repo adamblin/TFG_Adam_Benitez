@@ -1,3 +1,4 @@
+/** Registra si hay una sesión de concentración activa y expone la función para abortarla desde cualquier pantalla. */
 import { create } from 'zustand';
 
 type FocusSessionState = {

@@ -3,6 +3,7 @@ import { UpdateSubtaskUseCase } from './update-subtask.use-case';
 import { SubtasksRepository } from '../../domain/repositories/subtasks.repository';
 import { TasksRepository } from 'src/modules/tasks/domain/repositories/tasks.repository';
 import { XPService } from 'src/modules/xp/application/xp.service';
+import { StreaksService } from 'src/modules/streaks/application/streaks.service';
 import { SubtaskEntity } from '../../domain/entities/subtask.entity';
 import { TaskEntity } from 'src/modules/tasks/domain/entities/task.entity';
 
@@ -60,18 +61,33 @@ function makeXpService(): jest.Mocked<XPService> {
     spendCoins: jest.fn(),
   } as unknown as jest.Mocked<XPService>;
 }
+function makeStreaksService(): jest.Mocked<StreaksService> {
+  return {
+    getStreak: jest.fn(),
+    recordActivity: jest
+      .fn()
+      .mockResolvedValue({ streak: {}, isNewRecord: false }),
+  } as unknown as jest.Mocked<StreaksService>;
+}
 
 describe('UpdateSubtaskUseCase', () => {
   let useCase: UpdateSubtaskUseCase;
   let subsRepo: jest.Mocked<SubtasksRepository>;
   let tasksRepo: jest.Mocked<TasksRepository>;
   let xpService: jest.Mocked<XPService>;
+  let streaksService: jest.Mocked<StreaksService>;
 
   beforeEach(() => {
     subsRepo = makeSubsRepo();
     tasksRepo = makeTasksRepo();
     xpService = makeXpService();
-    useCase = new UpdateSubtaskUseCase(subsRepo, tasksRepo, xpService);
+    streaksService = makeStreaksService();
+    useCase = new UpdateSubtaskUseCase(
+      subsRepo,
+      tasksRepo,
+      xpService,
+      streaksService,
+    );
   });
 
   it('throws NotFoundException when subtask does not exist', async () => {

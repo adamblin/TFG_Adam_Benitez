@@ -10,6 +10,7 @@ import {
 import { useThemeStore } from '../../../store/theme.store';
 import { useAuthStore } from '../../../store/auth.store';
 
+/** Obtiene el catálogo completo de items con estado de propiedad y equipamiento del usuario. */
 export function useShopCatalog() {
   return useQuery({
     queryKey: ['shop-catalog'],
@@ -18,6 +19,7 @@ export function useShopCatalog() {
   });
 }
 
+/** Obtiene las preferencias visuales activas del usuario (tema e icono) y las aplica al store de tema. */
 export function usePreferences() {
   const setPreferences = useThemeStore((s) => s.setPreferences);
   const accessToken = useAuthStore((s) => s.accessToken);
@@ -38,6 +40,7 @@ export function usePreferences() {
   return query;
 }
 
+/** Mutation para comprar un item con coins; invalida el catálogo y el XP al completarse. */
 export function usePurchaseItem() {
   const queryClient = useQueryClient();
 
@@ -53,6 +56,7 @@ export function usePurchaseItem() {
   });
 }
 
+/** Mutation para equipar un item comprado; actualiza el store de tema de forma inmediata. */
 export function useEquipItem() {
   const queryClient = useQueryClient();
   const setPreferences = useThemeStore((s) => s.setPreferences);

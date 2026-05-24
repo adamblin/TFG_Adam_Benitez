@@ -1,3 +1,4 @@
+/** Almacena la sesión activa del usuario (tokens JWT + datos del usuario). Se limpia al hacer logout. */
 import { create } from 'zustand';
 import type { CurrentUserResponse } from '../services/auth.service';
 

@@ -6,18 +6,25 @@ import {
 import { SubtasksRepository } from '../../domain/repositories/subtasks.repository';
 import { TasksRepository } from 'src/modules/tasks/domain/repositories/tasks.repository';
 import { XPService } from 'src/modules/xp/application/xp.service';
+import { StreaksService } from 'src/modules/streaks/application/streaks.service';
 import { SubtaskEntity } from '../../domain/entities/subtask.entity';
 import { UpdateSubtaskInput } from '../inputs/update-subtask.input';
 
 const XP_SUBTASK = 20;
 const XP_TASK_COMPLETE = 50;
 
+/**
+ * Actualiza título y/o estado de una subtarea.
+ * Al completarla: otorga 20 XP y registra actividad de racha.
+ * Si todas las subtareas de la tarea quedan completadas, auto-completa la tarea padre y otorga 50 XP extra.
+ */
 @Injectable()
 export class UpdateSubtaskUseCase {
   constructor(
     private readonly subtasksRepository: SubtasksRepository,
     private readonly tasksRepository: TasksRepository,
     private readonly xpService: XPService,
+    private readonly streaksService: StreaksService,
   ) {}
 
   async execute(input: UpdateSubtaskInput): Promise<SubtaskEntity> {
@@ -42,6 +49,7 @@ export class UpdateSubtaskUseCase {
     if (input.completed !== undefined) {
       if (input.completed) {
         await this.xpService.awardXP(input.userId, XP_SUBTASK);
+        await this.streaksService.recordActivity(input.userId);
       }
 
       const allSiblings = await this.subtasksRepository.findByTaskId(

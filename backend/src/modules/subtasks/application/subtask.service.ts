@@ -8,6 +8,7 @@ import { GetSubtaskByIdUseCase } from './use-cases/get-subtask-by-id.use-case';
 import { UpdateSubtaskUseCase } from './use-cases/update-subtask.use-case';
 import { DeleteSubtaskUseCase } from './use-cases/delete-subtask.use-case';
 
+/** Orquesta las operaciones CRUD sobre subtareas delegando en use cases especializados. */
 @Injectable()
 export class SubtaskService {
   constructor(

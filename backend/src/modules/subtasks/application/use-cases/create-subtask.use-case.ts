@@ -9,6 +9,7 @@ import { SubtaskEntity } from '../../domain/entities/subtask.entity';
 import { CreateSubtaskInput } from '../inputs/create-subtask.input';
 
 @Injectable()
+/** Crea una subtarea para una tarea existente, verificando que el usuario sea propietario. */
 export class CreateSubtaskUseCase {
   constructor(
     private readonly subtasksRepository: SubtasksRepository,

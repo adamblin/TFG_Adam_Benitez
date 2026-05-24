@@ -5,7 +5,7 @@ import { useStreakCelebrationStore } from '../../../store/streak-celebration.sto
 import { getRandomPhrase } from '../../../services/motivational-phrases.service';
 import { usePhraseModalStore } from '../../../store/phrase-modal.store';
 
-function showStreakOrPhrase(category: 'TASK' | 'SUBTASK' | 'FOCUS', emoji: string) {
+function showStreakOrPhrase(category: 'SUBTASK', emoji: string) {
   const streakStore = useStreakCelebrationStore.getState();
   const today = new Date().toISOString().slice(0, 10);
   const isFirstToday = streakStore.lastCelebrationDate !== today;
@@ -19,6 +19,7 @@ function showStreakOrPhrase(category: 'TASK' | 'SUBTASK' | 'FOCUS', emoji: strin
   }
 }
 
+/** Mutation para marcar/desmarcar una subtarea. Al completarla por primera vez en el día muestra la celebración de racha; en otros casos muestra una frase motivacional. */
 export function useToggleSubtask() {
   const queryClient = useQueryClient();
 
@@ -64,6 +65,7 @@ export function useToggleSubtask() {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       queryClient.invalidateQueries({ queryKey: ['user-xp'] });
+      queryClient.invalidateQueries({ queryKey: ['streak'] });
     },
   });
 }

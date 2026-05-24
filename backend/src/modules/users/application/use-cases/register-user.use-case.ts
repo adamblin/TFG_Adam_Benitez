@@ -4,6 +4,7 @@ import { RegisterUserInput } from '../inputs/register-user.input';
 import { RegisterUserResponse } from '../types/register-user-response.type';
 import { UsersRepository } from '../../domain/repositories/users.repository';
 
+/** Registra un nuevo usuario validando unicidad de email y username, y almacena la contraseña con bcrypt. */
 @Injectable()
 export class RegisterUserUseCase {
   constructor(private readonly usersRepository: UsersRepository) {}

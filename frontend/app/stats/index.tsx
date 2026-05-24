@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { ActivityIndicator, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PageShell, SectionLabel } from '../../src/shared/components';
 import { useTheme, spacing } from '../../src/shared/theme';
@@ -18,6 +18,7 @@ import { useStatsDashboard } from '../../src/features/stats/hooks/useStatsDashbo
 export default function StatsScreen() {
   const colors = useTheme();
   const {
+    isLoading,
     period,
     setPeriod,
     kpis,
@@ -34,6 +35,14 @@ export default function StatsScreen() {
     bestDayData,
     weeklyChartData,
   } = useStatsDashboard();
+
+  if (isLoading) {
+    return (
+      <PageShell>
+        <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 60 }} />
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

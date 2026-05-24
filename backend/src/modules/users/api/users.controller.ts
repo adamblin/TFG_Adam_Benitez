@@ -2,53 +2,89 @@ import { Controller, Get, Patch, Body, UseGuards, Req } from '@nestjs/common';
 import { Request } from 'express';
 import {
   ApiBearerAuth,
+  ApiBody,
   ApiOkResponse,
   ApiOperation,
   ApiProperty,
+  ApiPropertyOptional,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
-
-type AuthenticatedRequestUser = {
-  sub: string;
-  username: string;
-};
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
+import { JwtAuthGuard } from 'src/modules/auth/api/guards/jwt-auth.guard';
+import { UsersRepository } from '../domain/repositories/users.repository';
 
 type AuthenticatedRequest = Request & {
-  user: AuthenticatedRequestUser;
+  user: { sub: string; username: string };
 };
 
-class MeResponseDto {
-  @ApiProperty() id!: string;
-  @ApiProperty() username!: string;
+export class UserProfileResponseDto {
+  @ApiProperty({ example: 'cmnt7uacz0000vodch0gop9uj' })
+  id!: string;
+
+  @ApiProperty({ example: 'john_doe' })
+  username!: string;
+
+  @ApiProperty({ example: 'john@example.com' })
+  email!: string;
+
+  @ApiProperty()
+  createdAt!: string;
 }
 
-type UpdateMeBody = {
+export class UpdateUserDto {
+  @ApiPropertyOptional({ example: 'new_username' })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(50)
   username?: string;
+
+  @ApiPropertyOptional({ example: 'new@example.com' })
+  @IsOptional()
+  @IsEmail()
   email?: string;
-};
+}
 
 @Controller('users')
 @ApiTags('Users')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class UsersController {
-  @UseGuards(JwtAuthGuard)
+  constructor(private readonly usersRepository: UsersRepository) {}
+
   @Get('me')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get the current authenticated user' })
-  @ApiOkResponse({ type: MeResponseDto })
-  me(@Req() req: AuthenticatedRequest) {
-    return { id: req.user.sub, username: req.user.username };
+  @ApiOperation({ summary: 'Get full profile of the current user' })
+  @ApiOkResponse({ type: UserProfileResponseDto })
+  async me(@Req() req: AuthenticatedRequest): Promise<UserProfileResponseDto> {
+    const user = await this.usersRepository.findById(req.user.sub);
+    return {
+      id: user!.id,
+      username: user!.username,
+      email: user!.email,
+      createdAt: user!.createdAt.toISOString(),
+    };
   }
 
-  @UseGuards(JwtAuthGuard)
   @Patch('me')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update current authenticated user (partial)' })
-  @ApiOkResponse({ type: MeResponseDto })
-  updateMe(@Req() req: AuthenticatedRequest, @Body() body: UpdateMeBody) {
-    const allowed: UpdateMeBody = {};
-    if (body.username) allowed.username = String(body.username).trim();
-    if (body.email) allowed.email = String(body.email).trim().toLowerCase();
-    return { id: req.user.sub, ...allowed };
+  @ApiOperation({ summary: 'Update username or email of the current user' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiOkResponse({ type: UserProfileResponseDto })
+  async updateMe(
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: UpdateUserDto,
+  ): Promise<UserProfileResponseDto> {
+    const user = await this.usersRepository.update(req.user.sub, dto);
+    return {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      createdAt: user.createdAt.toISOString(),
+    };
   }
 }

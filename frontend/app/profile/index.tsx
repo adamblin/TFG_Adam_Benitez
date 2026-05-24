@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { ActivityIndicator, Text, View } from 'react-native';
 import { PageShell, SectionLabel } from '../../src/shared/components';
 import {
   ProfileHeaderCard,
@@ -50,6 +50,7 @@ export default function ProfileScreen() {
   const { data: sessions = [] } = useFocusSessions();
 
   const {
+    isLoading,
     period,
     setPeriod,
     kpis,
@@ -81,6 +82,14 @@ export default function ProfileScreen() {
 
   const username = currentUser?.username ?? 'guest_user';
   const userId = currentUser?.id ?? 'unknown-id';
+
+  if (isLoading) {
+    return (
+      <PageShell>
+        <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 60 }} />
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

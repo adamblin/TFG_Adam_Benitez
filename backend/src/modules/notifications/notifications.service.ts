@@ -6,6 +6,7 @@ export type NotificationContext = {
   sessionsToday: number;
 };
 
+/** Genera mensajes motivacionales contextuales según la racha, récords y sesiones del día. */
 @Injectable()
 export class NotificationsService {
   getSessionCompleteMessage(ctx: NotificationContext): string {

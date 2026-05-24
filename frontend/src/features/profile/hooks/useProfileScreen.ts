@@ -21,6 +21,7 @@ function formatMinutes(min: number): string {
   return m === 0 ? `${h}h` : `${h}h ${m}m`;
 }
 
+/** Agrega los datos necesarios para la pantalla de perfil: estadísticas, sesiones recientes y acción de logout. */
 export function useProfileScreen() {
   const currentUser = useAuthStore((state) => state.currentUser);
   const clearSession = useAuthStore((state) => state.clearSession);

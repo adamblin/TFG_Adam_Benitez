@@ -15,6 +15,10 @@ export type StressInfo = {
   emoji: string;
 };
 
+/**
+ * Calcula el nivel de estrés ponderando tareas pendientes: alto riesgo vale 3 puntos, medio 1.
+ * El porcentaje se normaliza sobre el máximo posible (todas las tareas en riesgo alto).
+ */
 function computeStress(tasks: Task[]): StressInfo {
   const pending     = tasks.filter((t) => !t.completed);
   const highCount   = pending.filter((t) => computeRisk(t) === 'high').length;
@@ -46,6 +50,7 @@ export function formatDueDateCa(dueDate: string | null): string {
 
 const ESSENTIAL_LIMIT = 3;
 
+/** Provee datos para la pantalla "Safe Mode": nivel de estrés, tareas ordenadas por riesgo y las 3 más urgentes. */
 export function useStuckScreen() {
   const colors = useTheme();
   const { data: tasks = [], isLoading } = useTasks();

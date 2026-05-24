@@ -261,12 +261,17 @@ function buildMonthWeeks(
 const DOW_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+/**
+ * Calcula todas las métricas del dashboard de estadísticas (KPIs, gráficas, heatmap anual,
+ * calendario mensual y ranking de mejor día) para los periodos semanal, mensual y anual.
+ */
 export function useStatsDashboard() {
   const [period, setPeriod] = useState<StatsPeriod>('weekly');
   const [monthOffset, setMonthOffset] = useState(0);
-  const { data: sessions = [] } = useFocusSessions();
-  const { data: tasks = [] } = useTasks();
-  const { data: streak } = useStreak();
+  const { data: sessions = [], isLoading: sessionsLoading } = useFocusSessions();
+  const { data: tasks = [], isLoading: tasksLoading } = useTasks();
+  const { data: streak, isLoading: streakLoading } = useStreak();
+  const isLoading = sessionsLoading || tasksLoading || streakLoading;
 
   const today = useMemo(() => new Date(), []);
 
@@ -548,6 +553,7 @@ export function useStatsDashboard() {
   }, [period, sessions, tasks, streak, today]);
 
   return {
+    isLoading,
     period,
     setPeriod,
     kpis,

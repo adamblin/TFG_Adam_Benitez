@@ -8,6 +8,7 @@ import { TasksRepository } from 'src/modules/tasks/domain/repositories/tasks.rep
 import { SubtaskEntity } from '../../domain/entities/subtask.entity';
 
 @Injectable()
+/** Obtiene una subtarea por id verificando que pertenezca al usuario solicitante. */
 export class GetSubtaskByIdUseCase {
   constructor(
     private readonly subtasksRepository: SubtasksRepository,

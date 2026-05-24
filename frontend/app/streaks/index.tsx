@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, View, Text, FlatList, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { PageShell, SectionLabel } from '../../src/shared/components';
 import { useTheme, spacing } from '../../src/shared/theme';
@@ -34,8 +34,9 @@ function buildWeekArray(sessions: FocusSession[]): boolean[] {
 export default function StreaksScreen() {
   const colors = useTheme();
   const [viewMode, setViewMode] = useState<'weekly' | 'monthly'>('weekly');
-  const { data: streak }        = useStreak();
-  const { data: sessions = [] } = useFocusSessions();
+  const { data: streak, isLoading: streakLoading }        = useStreak();
+  const { data: sessions = [], isLoading: sessionsLoading } = useFocusSessions();
+  const isLoading = streakLoading || sessionsLoading;
 
   const streakDays    = streak?.currentStreak  ?? 0;
   const longestStreak = streak?.longestStreak  ?? 0;
@@ -50,6 +51,14 @@ export default function StreaksScreen() {
     ],
     [longestStreak],
   );
+
+  if (isLoading) {
+    return (
+      <PageShell>
+        <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 60 }} />
+      </PageShell>
+    );
+  }
 
   return (
     <PageShell>

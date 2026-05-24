@@ -1,4 +1,10 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOkResponse,
@@ -24,7 +30,15 @@ export class MotivationalPhrasesController {
   @ApiOkResponse({ type: PhraseResponseDto })
   async getRandom(
     @Query('category') category: PhraseCategory,
-  ): Promise<PhraseResponseDto | null> {
-    return this.service.getRandomByCategory(category);
+  ): Promise<PhraseResponseDto> {
+    const phrase = await this.service.getRandomByCategory(category);
+    if (!phrase)
+      throw new NotFoundException('No phrases found for this category');
+    return {
+      id: phrase.id,
+      text: phrase.text,
+      category: phrase.category,
+      createdAt: phrase.createdAt.toISOString(),
+    };
   }
 }

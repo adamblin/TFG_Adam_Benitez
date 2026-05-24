@@ -152,4 +152,33 @@ describe('TasksController – full CRUD (e2e)', () => {
       .get(`/tasks/${taskId}`)
       .set(authHeader(auth.token))
       .expect(404));
+
+  // ── Breakdown ─────────────────────────────────────────────────────────────
+
+  it('POST /tasks/breakdown – 401 without token', () =>
+    request(app.getHttpServer())
+      .post('/tasks/breakdown')
+      .send({ title: 'Build a login page' })
+      .expect(401));
+
+  it('POST /tasks/breakdown – 400 when title is missing', () =>
+    request(app.getHttpServer())
+      .post('/tasks/breakdown')
+      .set(authHeader(auth.token))
+      .send({})
+      .expect(400));
+
+  it('POST /tasks/breakdown – 400 when title is empty string', () =>
+    request(app.getHttpServer())
+      .post('/tasks/breakdown')
+      .set(authHeader(auth.token))
+      .send({ title: '' })
+      .expect(400));
+
+  it('POST /tasks/breakdown – 400 when title exceeds 300 characters', () =>
+    request(app.getHttpServer())
+      .post('/tasks/breakdown')
+      .set(authHeader(auth.token))
+      .send({ title: 'a'.repeat(301) })
+      .expect(400));
 });

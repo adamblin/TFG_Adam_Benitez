@@ -4,12 +4,17 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { TasksRepository } from '../../domain/repositories/tasks.repository';
+import { StreaksService } from 'src/modules/streaks/application/streaks.service';
 import { TaskEntity } from '../../domain/entities/task.entity';
 import { UpdateTaskInput } from '../inputs/update-task.input';
 
+/** Actualiza campos de una tarea. Registra actividad de racha cuando la tarea pasa a completada. */
 @Injectable()
 export class UpdateTaskUseCase {
-  constructor(private readonly tasksRepository: TasksRepository) {}
+  constructor(
+    private readonly tasksRepository: TasksRepository,
+    private readonly streaksService: StreaksService,
+  ) {}
 
   async execute(input: UpdateTaskInput): Promise<TaskEntity> {
     const existing = await this.tasksRepository.findById(input.taskId);
@@ -24,6 +29,10 @@ export class UpdateTaskUseCase {
         ? new Date()
         : null
       : undefined;
+
+    if (completedChanged && input.completed) {
+      await this.streaksService.recordActivity(input.userId);
+    }
 
     return this.tasksRepository.update(input.taskId, {
       ...(input.title !== undefined

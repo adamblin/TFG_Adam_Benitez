@@ -71,6 +71,6 @@ export class FocusSessionsController {
   @ApiOkResponse({ type: SessionResponseDto, isArray: true })
   async listSessions(@Req() req: AuthRequest): Promise<SessionResponseDto[]> {
     const sessions = await this.service.listSessions(req.user.sub);
-    return sessions.map(SessionResponseMapper.toDto);
+    return sessions.map((s) => SessionResponseMapper.toDto(s));
   }
 }

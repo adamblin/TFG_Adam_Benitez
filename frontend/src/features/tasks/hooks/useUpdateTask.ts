@@ -5,7 +5,7 @@ import { useStreakCelebrationStore } from '../../../store/streak-celebration.sto
 import { getRandomPhrase } from '../../../services/motivational-phrases.service';
 import { usePhraseModalStore } from '../../../store/phrase-modal.store';
 
-function showStreakOrPhrase(category: 'TASK' | 'SUBTASK' | 'FOCUS', emoji: string) {
+function showStreakOrPhrase(category: 'TASK', emoji: string) {
   const streakStore = useStreakCelebrationStore.getState();
   const today = new Date().toISOString().slice(0, 10);
   const isFirstToday = streakStore.lastCelebrationDate !== today;
@@ -19,6 +19,7 @@ function showStreakOrPhrase(category: 'TASK' | 'SUBTASK' | 'FOCUS', emoji: strin
   }
 }
 
+/** Mutation para actualizar una tarea. Al completarla muestra celebración de racha o frase motivacional según si es la primera acción del día. */
 export function useUpdateTask() {
   const queryClient = useQueryClient();
 
@@ -52,6 +53,7 @@ export function useUpdateTask() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['streak'] });
     },
   });
 }

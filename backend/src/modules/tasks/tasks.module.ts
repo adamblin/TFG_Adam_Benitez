@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { StreaksModule } from '../streaks/streaks.module';
 import { TaskController } from './api/task.controller';
 import { TasksService } from './application/tasks.service';
 import { ListTasksUseCase } from './application/use-cases/list-tasks.use-case';
@@ -11,6 +12,7 @@ import { TasksRepository } from './domain/repositories/tasks.repository';
 import { PrismaTasksRepository } from './infrastructure/repositories/prisma-tasks.repository';
 
 @Module({
+  imports: [StreaksModule],
   controllers: [TaskController],
   providers: [
     TasksService,

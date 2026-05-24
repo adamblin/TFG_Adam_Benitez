@@ -1,3 +1,4 @@
+/** Almacena las preferencias visuales del usuario (paleta de color de la app y color del avatar). Se actualiza al entrar en la app y al comprar en la tienda. */
 import { create } from 'zustand';
 import { type ColorPalette, oceanPalette, resolveTheme } from '../shared/theme/palettes';
 

@@ -6,6 +6,7 @@ import { UsersRepository } from '../../../users/domain/repositories/users.reposi
 import { LoginUserInput } from '../inputs/login-user.input';
 import { LoginResponse } from '../types/login-response.type';
 
+/** Autentica un usuario por username/contraseña y devuelve un par de tokens JWT (acceso + refresh). */
 @Injectable()
 export class LoginUserUseCase {
   constructor(

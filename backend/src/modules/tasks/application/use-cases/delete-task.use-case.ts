@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { TasksRepository } from '../../domain/repositories/tasks.repository';
 
+/** Elimina una tarea y todas sus subtareas, verificando que el usuario sea propietario. */
 @Injectable()
 export class DeleteTaskUseCase {
   constructor(private readonly tasksRepository: TasksRepository) {}

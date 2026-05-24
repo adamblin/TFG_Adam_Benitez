@@ -27,6 +27,7 @@ export type StreakResult = {
   isNewRecord: boolean;
 };
 
+/** Calcula y persiste la racha diaria del usuario basándose en días consecutivos de actividad. */
 @Injectable()
 export class StreaksService {
   constructor(private readonly streaksRepository: StreaksRepository) {}
@@ -35,6 +36,11 @@ export class StreaksService {
     return this.streaksRepository.findByUserId(userId);
   }
 
+  /**
+   * Registra actividad productiva del día. La llamada es idempotente dentro del mismo día.
+   * Incrementa la racha si la última actividad fue ayer; la reinicia a 1 si hubo un gap mayor.
+   * Devuelve `isNewRecord: true` cuando la racha supera el máximo histórico.
+   */
   async recordActivity(userId: string): Promise<StreakResult> {
     const today = startOfDay(new Date());
     const existing = await this.streaksRepository.findByUserId(userId);

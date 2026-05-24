@@ -3,6 +3,7 @@ import { FocusSessionsRepository } from '../../domain/repositories/focus-session
 import { FocusSessionEntity } from '../../domain/entities/focus-session.entity';
 import { StartSessionInput } from '../inputs/start-session.input';
 
+/** Inicia una nueva sesión de concentración. Si el usuario ya tiene una activa, la cierra automáticamente. */
 @Injectable()
 export class StartSessionUseCase {
   constructor(private readonly repo: FocusSessionsRepository) {}
