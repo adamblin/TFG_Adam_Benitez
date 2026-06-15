@@ -1,8 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { Card } from '../../../shared/components';
+import { Card, CoinIcon } from '../../../shared/components';
 import { makeStyles } from './ProfileHeaderCard.styles';
 import { useTheme, spacing } from '../../../shared/theme';
 import { useThemeStore } from '../../../store/theme.store';
@@ -67,7 +66,7 @@ export function ProfileHeaderCard({ avatarLetter, username, userId, coins = 0 }:
         borderWidth: 1,
         borderColor: `${colors.warning}35`,
       }}>
-        <Ionicons name="logo-bitcoin" size={15} color={colors.warning} />
+        <CoinIcon size={15} color={colors.warning} />
         <Text style={{ color: colors.warning, fontSize: 15, fontWeight: '800' }}>
           {coins.toLocaleString()}
         </Text>

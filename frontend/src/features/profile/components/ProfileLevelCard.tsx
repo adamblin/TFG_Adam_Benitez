@@ -1,8 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
-import { Card } from '../../../shared/components';
+import { Card, CoinIcon } from '../../../shared/components';
 import { useTheme, spacing } from '../../../shared/theme';
 
 const LEVEL_TITLES: [number, string][] = [
@@ -121,7 +120,7 @@ export function ProfileLevelCard({ level, xpInLevel, xpToNextLevel, progressPerc
             borderWidth: 1,
             borderColor: `${colors.warning}40`,
           }}>
-            <Ionicons name="logo-bitcoin" size={18} color={colors.warning} />
+            <CoinIcon size={18} color={colors.warning} />
           </View>
           <View>
             <Text style={{ color: colors.textMuted, fontSize: 10, fontWeight: '700', letterSpacing: 0.6 }}>

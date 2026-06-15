@@ -14,7 +14,7 @@ function fmtMin(m: number): string {
   if (m < 60) return `${m}m`;
   const h = Math.floor(m / 60);
   const r = m % 60;
-  return r === 0 ? `${h}h` : `${h}h${r < 10 ? '0' : ''}${r}m`;
+  return r === 0 ? `${h}h` : `${h}h ${r}m`;
 }
 
 function useColW() {
@@ -67,17 +67,13 @@ function InsightBar({ color, text }: { color: string; text: string }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function FocusCard({ data }: { data: WeeklyChartData }) {
   const colors = useTheme();
-  const { focusThis, focusLast, todayIdx, totalFocusThis, totalFocusLast } = data;
+  const { focusThis, todayIdx, totalFocusThis } = data;
   const colW  = useColW();
   const ACCENT = colors.focusSession;
 
-  const maxVal      = Math.max(...focusThis, ...focusLast, 1);
+  const maxVal      = Math.max(...focusThis, 1);
   const bestIdx     = focusThis.reduce((bi, v, i, arr) => (v > arr[bi] ? i : bi), 0);
   const nonZeroDays = focusThis.filter((v) => v > 0).length;
-
-  const delta = totalFocusLast > 0
-    ? Math.round(((totalFocusThis - totalFocusLast) / totalFocusLast) * 100)
-    : null;
 
   return (
     <Card style={{ marginBottom: spacing.md }}>
@@ -93,23 +89,19 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
           <Text style={{ color: colors.text, fontSize: 14, fontWeight: '700', marginTop: 2 }}>Focus Time</Text>
           <Text style={{ color: colors.textMuted, fontSize: 12 }}>This week · {DAYS[todayIdx]}</Text>
         </View>
-        {delta !== null && <HeroBadge up={delta >= 0} delta={delta} />}
       </View>
 
       {/* Column chart */}
       <View style={{ flexDirection: 'row', gap: COL_GAP }}>
         {DAYS.map((label, i) => {
           const val      = focusThis[i];
-          const lastVal  = focusLast[i];
           const isToday  = i === todayIdx;
           const isBest   = i === bestIdx && val > 0 && !isToday && nonZeroDays > 1;
-          const isFuture = i > todayIdx;
 
           const barH    = val > 0 ? Math.max(5, Math.round((val / maxVal) * CHART_H)) : 0;
-          const ghostH  = lastVal > 0 ? Math.max(4, Math.round((lastVal / maxVal) * CHART_H)) : 0;
-          const barColor  = isBest ? '#FFD700' : ACCENT;
-          const labelColor = isBest ? '#FFD700' : isToday ? ACCENT : colors.textMuted;
-          const barOpacity = isFuture ? 0.18 : isToday ? 1 : 0.65;
+          const barColor  = ACCENT;
+          const labelColor = isToday || isBest ? ACCENT : colors.textMuted;
+          const barOpacity = isToday || isBest ? 1 : 0.68;
 
           return (
             <View key={i} style={{ width: colW, alignItems: 'center' }}>
@@ -122,15 +114,6 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
               </View>
 
               <View style={{ width: colW, height: CHART_H, position: 'relative' }}>
-                {ghostH > 0 && (
-                  <View style={{
-                    position: 'absolute', bottom: 0,
-                    left: '18%', right: '18%',
-                    height: ghostH,
-                    backgroundColor: `${colors.focusSession}35`,
-                    borderTopLeftRadius: 3, borderTopRightRadius: 3,
-                  }} />
-                )}
                 {barH > 0 ? (
                   <View style={{
                     position: 'absolute', bottom: 0, left: 0, right: 0,
@@ -158,21 +141,9 @@ function FocusCard({ data }: { data: WeeklyChartData }) {
         })}
       </View>
 
-      {/* Legend */}
-      <View style={{ flexDirection: 'row', gap: 14, marginTop: spacing.md }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: ACCENT }} />
-          <Text style={{ color: colors.textMuted, fontSize: 10 }}>This week</Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-          <View style={{ width: 8, height: 8, borderRadius: 2, backgroundColor: `${colors.focusSession}35` }} />
-          <Text style={{ color: colors.textMuted, fontSize: 10 }}>Last week</Text>
-        </View>
-      </View>
-
       {focusThis[bestIdx] > 0 && (
         <InsightBar
-          color="#FFD700"
+          color={ACCENT}
           text={
             bestIdx === todayIdx
               ? `Today is your best day · ${fmtMin(focusThis[bestIdx])}`
@@ -215,7 +186,7 @@ function TasksCard({ data }: { data: WeeklyChartData }) {
         {tasks[bestIdx] > 0 && (
           <View style={{ alignItems: 'flex-end' }}>
             <Text style={{ color: colors.textMuted, fontSize: 11 }}>Best day</Text>
-            <Text style={{ color: '#FFD700', fontSize: 22, fontWeight: '900', marginTop: 2 }}>{DAYS[bestIdx]}</Text>
+            <Text style={{ color: ACCENT, fontSize: 22, fontWeight: '900', marginTop: 2 }}>{DAYS[bestIdx]}</Text>
             <Text style={{ color: colors.textMuted, fontSize: 11, marginTop: 1 }}>
               {tasks[bestIdx]} task{tasks[bestIdx] !== 1 ? 's' : ''}
             </Text>
@@ -229,12 +200,11 @@ function TasksCard({ data }: { data: WeeklyChartData }) {
           const val      = tasks[i];
           const isToday  = i === todayIdx;
           const isBest   = i === bestIdx && val > 0 && !isToday && nonZeroDays > 1;
-          const isFuture = i > todayIdx;
 
           const barH       = val > 0 ? Math.max(5, Math.round((val / maxVal) * CHART_H)) : 0;
-          const barColor   = isBest ? '#FFD700' : ACCENT;
-          const labelColor = isBest ? '#FFD700' : isToday ? ACCENT : colors.textMuted;
-          const barOpacity = isFuture ? 0.18 : isToday ? 1 : 0.65;
+          const barColor   = ACCENT;
+          const labelColor = isToday || isBest ? ACCENT : colors.textMuted;
+          const barOpacity = isToday || isBest ? 1 : 0.68;
 
           return (
             <View key={i} style={{ width: colW, alignItems: 'center' }}>
@@ -333,12 +303,11 @@ function SubtasksCard({ data }: { data: WeeklyChartData }) {
           const sub      = subtasks[i];
           const isToday  = i === todayIdx;
           const isBest   = i === bestIdx && sub > 0 && !isToday && nonZeroDays > 1;
-          const isFuture = i > todayIdx;
 
           const barH       = sub > 0 ? Math.max(5, Math.round((sub / maxSub) * CHART_H)) : 0;
-          const barColor   = isBest ? '#FFD700' : ACCENT;
-          const labelColor = isBest ? '#FFD700' : isToday ? ACCENT : colors.textMuted;
-          const barOpacity = isFuture ? 0.18 : isToday ? 1 : 0.65;
+          const barColor   = ACCENT;
+          const labelColor = isToday || isBest ? ACCENT : colors.textMuted;
+          const barOpacity = isToday || isBest ? 1 : 0.68;
 
           return (
             <View key={i} style={{ width: colW, alignItems: 'center' }}>

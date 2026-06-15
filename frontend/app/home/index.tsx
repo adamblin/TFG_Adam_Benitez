@@ -23,6 +23,14 @@ function getGreeting(): string {
   return 'Good Evening';
 }
 
+function isSameDay(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate()
+  );
+}
+
 export default function HomeScreen() {
   const colors = useTheme();
   const router = useRouter();
@@ -31,9 +39,22 @@ export default function HomeScreen() {
   const isLoading = tasksLoading || streakLoading;
   const currentUser = useAuthStore((state) => state.currentUser);
 
-  const completedTasks = tasks.filter((task) => task.completed).length;
-  const totalTasks = tasks.length;
-  const progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+  const today = new Date();
+  const completedTodayTasks = tasks.filter(
+    (task) => task.completedAt && isSameDay(new Date(task.completedAt), today),
+  );
+  const todayCompletedTasks = completedTodayTasks.length;
+  const todayTotalSubtasks = completedTodayTasks.reduce((sum, task) => sum + task.subtasks.length, 0);
+  const todayCompletedSubtasks = tasks.reduce(
+    (sum, task) =>
+      sum +
+      task.subtasks.filter(
+        (subtask) => subtask.completed && isSameDay(new Date(subtask.updatedAt), today),
+      ).length,
+    0,
+  );
+  const progressPercent =
+    todayTotalSubtasks > 0 ? Math.round((todayCompletedSubtasks / todayTotalSubtasks) * 100) : 0;
 
   const username = currentUser?.username ?? 'there';
   const avatarLetter = (currentUser?.username?.charAt(0) ?? 'U').toUpperCase();
@@ -86,19 +107,19 @@ export default function HomeScreen() {
       </View>
 
       {/* Daily progress */}
-      <ProgressCard percent={progressPercent} completed={completedTasks} total={totalTasks} />
+      <ProgressCard percent={progressPercent} completed={todayCompletedSubtasks} total={todayTotalSubtasks} />
 
       {/* Stat row */}
       <View style={{ flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.lg }}>
         <StatCard
-          value={totalTasks}
+          value={todayCompletedTasks}
           label="Tasks"
           icon="checkmark-circle"
           accentColor={colors.task}
         />
         <StatCard
-          value={completedTasks}
-          label="Done"
+          value={todayCompletedSubtasks}
+          label="Subtasks"
           icon="checkmark-done"
           accentColor={colors.subtask}
         />

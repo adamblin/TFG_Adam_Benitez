@@ -8,6 +8,7 @@ export { Card } from './Card';
 export { ProgressBar } from './ProgressBar';
 export { SectionLabel } from './SectionLabel';
 export { BottomNav } from './BottomNav';
+export { CoinIcon } from './CoinIcon';
 export { PageShell } from './PageShell';
 export { ProgressCard } from './ProgressCard';
 export { ActionCard } from './ActionCard';

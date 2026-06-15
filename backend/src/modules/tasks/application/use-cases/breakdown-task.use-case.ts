@@ -1,5 +1,5 @@
 import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 
 const SYSTEM_PROMPT =
   'Eres un asistente que transforma una descripción de tarea o una user story en un nombre corto y un plan accionable.\n' +
@@ -13,33 +13,44 @@ export type BreakdownResult = { title: string; subtasks: string[] };
 @Injectable()
 /**
  * Descompone una descripción de tarea en nombre corto y entre 4-8 subtareas ordenadas
- * usando el modelo Gemini 2.5 Flash Lite. Lanza ServiceUnavailableException si la cuota se agota.
+ * usando OpenAI. Lanza ServiceUnavailableException si la cuota se agota.
  */
 export class BreakdownTaskUseCase {
-  private readonly genAI: GoogleGenerativeAI;
+  private readonly openai: OpenAI;
 
   constructor() {
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY ?? '');
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY ?? '',
+    });
   }
 
   async execute(description: string): Promise<BreakdownResult> {
     let text: string;
 
     try {
-      const model = this.genAI.getGenerativeModel({
-        model: 'gemini-2.5-flash-lite',
-        systemInstruction: SYSTEM_PROMPT,
+      const response = await this.openai.responses.create({
+        model: process.env.OPENAI_MODEL ?? 'gpt-5.4-mini',
+        instructions: SYSTEM_PROMPT,
+        input: description,
+        max_output_tokens: 300,
       });
-
-      const result = await model.generateContent(description);
-      text = result.response.text();
+      text = response.output_text;
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes('429') || msg.toLowerCase().includes('quota')) {
+      const status =
+        typeof err === 'object' && err !== null && 'status' in err
+          ? (err as { status?: unknown }).status
+          : undefined;
+      if (
+        status === 429 ||
+        msg.includes('429') ||
+        msg.toLowerCase().includes('quota') ||
+        msg.toLowerCase().includes('rate limit')
+      ) {
         throw new ServiceUnavailableException('quota_exceeded');
       }
       throw new ServiceUnavailableException(
-        'AI breakdown service is unavailable. Check GEMINI_API_KEY.',
+        'AI breakdown service is unavailable. Check OPENAI_API_KEY.',
       );
     }
 

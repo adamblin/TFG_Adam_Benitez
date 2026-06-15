@@ -17,7 +17,7 @@ Pantalla de gestió de tasques i subtasques amb suport de descomposició automà
 
 ## Descomposició amb IA
 
-El botó "Break it down" crida `POST /tasks/breakdown` amb la descripció de la tasca i rep un nom suggerit + llista de subtasques generades per Gemini.
+El botó "Break it down" crida `POST /tasks/breakdown` amb la descripció de la tasca i rep un nom suggerit + llista de subtasques generades per OpenAI.
 
 ## Notes
 

@@ -63,7 +63,7 @@ export default function TasksScreen() {
         : 'AI breakdown failed';
 
       const body = isQuota
-        ? 'The Gemini API free-tier limit has been reached.\n\n• Go to aistudio.google.com\n• Create a new API key (new project)\n• Update GEMINI_API_KEY in backend/.env\n• Restart the backend'
+        ? 'The OpenAI API quota or rate limit has been reached.\n\n• Check billing and limits in platform.openai.com\n• Update OPENAI_API_KEY in backend/.env if needed\n• Restart the backend'
         : isNetwork
         ? 'Make sure the backend is running on port 3000 and that your phone and PC are on the same network (or use --tunnel).'
         : 'The AI service returned an unexpected error. Check the backend logs for details.';

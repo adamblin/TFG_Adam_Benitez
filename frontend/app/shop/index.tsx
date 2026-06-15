@@ -4,7 +4,7 @@ import {
   useWindowDimensions, Modal, Pressable,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { PageShell } from '../../src/shared/components';
+import { CoinIcon, PageShell } from '../../src/shared/components';
 import { spacing, useTheme } from '../../src/shared/theme';
 import {
   useShopCatalog, usePreferences, usePurchaseItem, useEquipItem,
@@ -175,7 +175,7 @@ function ShopTile({ item, size, onPress }: { item: ShopItem; size: number; onPre
               paddingVertical: Math.round(size * 0.04),
               borderWidth: 1, borderColor: `${COIN_GOLD}55`,
             }}>
-              <Ionicons name="logo-bitcoin" size={Math.round(size * 0.16)} color={COIN_GOLD} />
+              <CoinIcon size={Math.round(size * 0.18)} color={COIN_GOLD} />
               <Text style={{ color: COIN_GOLD, fontSize: Math.round(size * 0.15), fontWeight: '900', lineHeight: Math.round(size * 0.2) }}>
                 {item.price}
               </Text>
@@ -288,14 +288,14 @@ function ItemDetailSheet({
               <View style={{ gap: 3 }}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <Text style={{ color: COIN_GOLD, fontSize: 17, fontWeight: '900' }}>{item.price}</Text>
-                  <Ionicons name="logo-bitcoin" size={15} color={COIN_GOLD} />
+                  <CoinIcon size={15} color={COIN_GOLD} />
                   <Text style={{ color: colors.textMuted, fontSize: 12 }}>price</Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
                   <Text style={{ color: canAfford ? colors.success : colors.error, fontSize: 14, fontWeight: '800' }}>
                     {balance}
                   </Text>
-                  <Ionicons name="logo-bitcoin" size={13} color={canAfford ? colors.success : colors.error} />
+                  <CoinIcon size={13} color={canAfford ? colors.success : colors.error} />
                   <Text style={{ color: colors.textMuted, fontSize: 12 }}>
                     {canAfford ? 'available — you can afford it' : `available — need ${shortage} more`}
                   </Text>
@@ -385,7 +385,7 @@ export default function ShopScreen() {
             paddingHorizontal: 13, paddingVertical: 8,
             borderWidth: 1, borderColor: `${COIN_GOLD}35`,
           }}>
-            <Ionicons name="logo-bitcoin" size={15} color={COIN_GOLD} />
+            <CoinIcon size={15} color={COIN_GOLD} />
             <Text style={{ color: COIN_GOLD, fontSize: 15, fontWeight: '900' }}>{xp?.coins ?? 0}</Text>
           </View>
         </View>

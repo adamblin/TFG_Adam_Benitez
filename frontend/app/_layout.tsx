@@ -1,6 +1,7 @@
 import { Stack, router, usePathname, useRootNavigationState } from 'expo-router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useEffect } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StreakCelebrationOverlay, MotivationalPhraseModal } from '../src/shared/components';
 import { useTheme } from '../src/shared/theme';
 import { usePreferences } from '../src/features/shop/hooks/useShop';
@@ -43,11 +44,13 @@ function ThemedStack() {
 
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <ThemedStack />
-      <AuthGuard />
-      <StreakCelebrationOverlay />
-      <MotivationalPhraseModal />
-    </QueryClientProvider>
+    <SafeAreaProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemedStack />
+        <AuthGuard />
+        <StreakCelebrationOverlay />
+        <MotivationalPhraseModal />
+      </QueryClientProvider>
+    </SafeAreaProvider>
   );
 }

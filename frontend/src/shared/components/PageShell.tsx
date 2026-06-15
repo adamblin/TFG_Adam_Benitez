@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { SafeAreaView, ScrollView, View, useWindowDimensions } from 'react-native';
+import { ScrollView, View, useWindowDimensions } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
 import { spacing } from '../theme/colors';
@@ -57,7 +58,7 @@ export function PageShell({ children, navItems }: PageShellProps) {
 
   // ── Mobile layout ──────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar style="light" />
       <LinearGradient
         colors={[`${colors.primary}20`, `${colors.secondary}0a`, 'transparent']}
