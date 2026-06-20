@@ -15,6 +15,7 @@ import { useTasks } from '../../src/features/tasks/hooks/useTasks';
 import { useStreak } from '../../src/features/streaks/hooks/useStreak';
 import { useAuthStore } from '../../src/store/auth.store';
 import { ActivityIndicator } from 'react-native';
+import { CompleteProfileModal } from '../../src/features/auth/components/CompleteProfileModal';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -38,6 +39,7 @@ export default function HomeScreen() {
   const { data: streak, isLoading: streakLoading } = useStreak();
   const isLoading = tasksLoading || streakLoading;
   const currentUser = useAuthStore((state) => state.currentUser);
+  const needsUsername = useAuthStore((state) => state.needsUsername);
 
   const today = new Date();
   const completedTodayTasks = tasks.filter(
@@ -79,6 +81,7 @@ export default function HomeScreen() {
 
   return (
     <PageShell>
+      {needsUsername && <CompleteProfileModal />}
       {/* Header */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.lg }}>
         <View style={{ flex: 1, paddingRight: spacing.md }}>

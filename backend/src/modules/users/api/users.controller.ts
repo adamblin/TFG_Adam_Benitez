@@ -65,7 +65,7 @@ export class UsersController {
     const user = await this.usersRepository.findById(req.user.sub);
     return {
       id: user!.id,
-      username: user!.username,
+      username: user!.username ?? '',
       email: user!.email,
       createdAt: user!.createdAt.toISOString(),
     };
@@ -82,7 +82,7 @@ export class UsersController {
     const user = await this.usersRepository.update(req.user.sub, dto);
     return {
       id: user.id,
-      username: user.username,
+      username: user.username ?? '',
       email: user.email,
       createdAt: user.createdAt.toISOString(),
     };

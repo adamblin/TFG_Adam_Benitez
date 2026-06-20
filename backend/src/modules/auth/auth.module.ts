@@ -7,6 +7,8 @@ import { AuthController } from './api/auth.controller';
 import { AuthService } from './application/auth.service';
 import { LoginUserUseCase } from './application/use-cases/login-user.use-case';
 import { RefreshTokenUseCase } from './application/use-cases/refresh-token.use-case';
+import { GoogleAuthUseCase } from './application/use-cases/google-auth.use-case';
+import { CompleteProfileUseCase } from './application/use-cases/complete-profile.use-case';
 import { JwtStrategy } from './infrastructure/passport/jwt.strategy';
 
 @Module({
@@ -23,6 +25,6 @@ import { JwtStrategy } from './infrastructure/passport/jwt.strategy';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LoginUserUseCase, RefreshTokenUseCase, JwtStrategy],
+  providers: [AuthService, LoginUserUseCase, RefreshTokenUseCase, GoogleAuthUseCase, CompleteProfileUseCase, JwtStrategy],
 })
 export class AuthModule {}

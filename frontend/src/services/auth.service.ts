@@ -50,3 +50,23 @@ export async function refreshSession(input: { refreshToken: string }) {
     body: JSON.stringify(input),
   });
 }
+
+export type GoogleAuthResponse = {
+  token: string;
+  refreshToken: string;
+  needsUsername: boolean;
+};
+
+export async function googleAuth(accessToken: string) {
+  return apiRequest<GoogleAuthResponse>('/auth/google', {
+    method: 'POST',
+    body: JSON.stringify({ accessToken }),
+  });
+}
+
+export async function completeProfile(username: string) {
+  return apiRequest<GoogleAuthResponse>('/auth/complete-profile', {
+    method: 'PATCH',
+    body: JSON.stringify({ username }),
+  });
+}

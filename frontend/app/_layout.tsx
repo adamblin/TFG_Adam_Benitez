@@ -12,7 +12,7 @@ hydrateStreakStore();
 
 const queryClient = new QueryClient();
 
-const PUBLIC_ROUTES = ['/', '/auth/login', '/auth/register', '/auth/forgot-password'];
+const PUBLIC_ROUTES = ['/', '/auth/login', '/auth/register', '/auth/forgot-password', '/auth/google/success'];
 
 function AuthGuard() {
   const accessToken = useAuthStore((state) => state.accessToken);

@@ -5,6 +5,7 @@ import { AppButton, AppField, FormShell } from '../../../shared/components';
 import { useLoginForm } from '../hooks/useLoginForm';
 import { FormModeSwitcher } from './FormModeSwitcher';
 import { FormHeader } from './FormHeader';
+import { GoogleAuthButton } from './GoogleAuthButton';
 
 const DEV_PLACEHOLDERS = __DEV__
   ? {
@@ -87,6 +88,8 @@ export function LoginForm() {
           {message.text}
         </Text>
       )}
+
+      <GoogleAuthButton />
     </FormShell>
   );
 }

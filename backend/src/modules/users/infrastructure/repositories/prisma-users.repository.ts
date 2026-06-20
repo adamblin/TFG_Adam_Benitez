@@ -35,13 +35,25 @@ export class PrismaUsersRepository implements UsersRepository {
     });
   }
 
+  async createOAuthUser(data: {
+    email: string;
+    googleId: string;
+  }): Promise<UserEntity> {
+    return this.prisma.user.create({ data });
+  }
+
+  async findByGoogleId(googleId: string): Promise<UserEntity | null> {
+    return this.prisma.user.findUnique({ where: { googleId } });
+  }
+
   async update(
     id: string,
-    data: { username?: string; email?: string },
+    data: { username?: string; email?: string; googleId?: string },
   ): Promise<UserEntity> {
-    return this.prisma.user.update({
-      where: { id },
-      data,
-    });
+    return this.prisma.user.update({ where: { id }, data });
+  }
+
+  async updateUsername(id: string, username: string): Promise<UserEntity> {
+    return this.prisma.user.update({ where: { id }, data: { username } });
   }
 }

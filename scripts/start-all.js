@@ -162,6 +162,18 @@ async function main() {
 
   let frontendProcess = null;
   if (fs.existsSync(frontendAppPath)) {
+    writeLine('Clearing port 8081...');
+    if (process.platform === 'win32') {
+      const netstat8081 = spawnSync('netstat', ['-ano'], { encoding: 'utf8', shell: true });
+      const match8081 = (netstat8081.stdout || '').split('\n').find((l) => l.includes(':8081') && l.includes('LISTENING'));
+      if (match8081) {
+        const pid8081 = match8081.trim().split(/\s+/).pop();
+        if (pid8081) spawnSync('taskkill', ['/PID', pid8081, '/T', '/F'], { stdio: 'ignore', shell: true });
+      }
+    } else {
+      spawnSync('sh', ['-c', 'lsof -ti:8081 | xargs kill -9'], { stdio: 'ignore' });
+    }
+
     writeLine('Starting frontend in background...');
     frontendProcess = runDetached(
       npmCommand,

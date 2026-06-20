@@ -34,7 +34,7 @@ export class RegisterUserUseCase {
     return {
       id: user.id,
       email: user.email,
-      username: user.username,
+      username: user.username!,
     };
   }
 }
