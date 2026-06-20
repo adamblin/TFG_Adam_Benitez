@@ -15,7 +15,7 @@ export default function GoogleSuccessPage() {
     handleCallbackUrl(url, setSession, router).catch(() => {
       router.replace('/');
     });
-  }, []);
+  }, [router, setSession]);
 
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

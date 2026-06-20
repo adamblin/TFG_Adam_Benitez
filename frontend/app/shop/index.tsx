@@ -3,7 +3,6 @@ import {
   View, Text, TouchableOpacity, ActivityIndicator,
   useWindowDimensions, Modal, Pressable,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { CoinIcon, PageShell } from '../../src/shared/components';
 import { spacing, useTheme } from '../../src/shared/theme';
 import {
